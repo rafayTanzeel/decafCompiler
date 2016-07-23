@@ -4,23 +4,7 @@ llc: /usr/lib/llvm-3.8/bin/llc
 cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
-; ModuleID = 'QuickSort'
-
-@x = global [0 x i32] zeroinitializer
-
-declare void @print_string(i8*)
-
-declare void @print_int(i32)
-
-define void @main() {
-entry:
-  ret i32 0
-}
-assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/test/aqs.llvm" -o "llvm/test/aqs.llvm.bc" ... failed (1)
-/usr/lib/llvm-3.8/bin/llvm-as: llvm/test/aqs.llvm:11:7: error: value doesn't match function result type 'void'
-  ret i32 0
-      ^
-converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/test/aqs.llvm.bc" -o "llvm/test/aqs.llvm.s" ... ok
-linking:gcc -o "llvm/test/aqs.llvm.exec" "llvm/test/aqs.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
-running:llvm/test/aqs.llvm.exec ... ok
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-6)
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  main type should be int
+codegen failed

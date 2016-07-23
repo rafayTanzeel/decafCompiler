@@ -18,5 +18,6 @@ declare void @print_int(i32)
 define void @cr() {
 entry:
   call void @print_string(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @globalstring, i32 0, i32 0))
+  ret void
 }
 codegen failed

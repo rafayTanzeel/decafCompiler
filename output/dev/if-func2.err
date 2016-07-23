@@ -4,22 +4,7 @@ llc: /usr/lib/llvm-3.8/bin/llc
 cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
-; ModuleID = 'C'
-
-define i32 @f() {
-entry:
-  ret i32 1
-}
-
-define void @main() {
-entry:
-  ret i32 0
-}
-assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/if-func2.llvm" -o "llvm/dev/if-func2.llvm.bc" ... failed (1)
-/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/if-func2.llvm:10:7: error: value doesn't match function result type 'void'
-  ret i32 0
-      ^
-converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/if-func2.llvm.bc" -o "llvm/dev/if-func2.llvm.s" ... ok
-linking:gcc -o "llvm/dev/if-func2.llvm.exec" "llvm/dev/if-func2.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
-running:llvm/dev/if-func2.llvm.exec ... failed (16)
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-6)
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  main type should be int
+codegen failed

@@ -7,6 +7,7 @@ entry:
   %a1 = alloca i1
   store i1 %a, i1* %a1
   call void @print_int(i32 1)
+  ret void
 }
 
 define i32 @main() {

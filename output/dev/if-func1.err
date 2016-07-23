@@ -4,21 +4,7 @@ llc: /usr/lib/llvm-3.8/bin/llc
 cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
-; ModuleID = 'C'
-
-define void @f() {
-entry:
-}
-
-define void @main() {
-entry:
-  ret i32 0
-}
-assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/if-func1.llvm" -o "llvm/dev/if-func1.llvm.bc" ... failed (1)
-/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/if-func1.llvm:5:1: error: expected instruction opcode
-}
-^
-converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/if-func1.llvm.bc" -o "llvm/dev/if-func1.llvm.s" ... ok
-linking:gcc -o "llvm/dev/if-func1.llvm.exec" "llvm/dev/if-func1.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
-running:llvm/dev/if-func1.llvm.exec ... failed (16)
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-6)
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  main type should be int
+codegen failed

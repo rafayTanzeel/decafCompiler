@@ -1,10 +1,2 @@
-; ModuleID = 'QuickSort'
-
-@a = global [0 x i32] zeroinitializer
-@b = global [0 x i32] zeroinitializer
-@c = global [0 x i32] zeroinitializer
-
-define void @main() {
-entry:
-  ret i32 0
-}
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  main type should be int

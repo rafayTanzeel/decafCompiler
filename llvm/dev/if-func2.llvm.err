@@ -1,11 +1,2 @@
-; ModuleID = 'C'
-
-define i32 @f() {
-entry:
-  ret i32 1
-}
-
-define void @main() {
-entry:
-  ret i32 0
-}
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  main type should be int
