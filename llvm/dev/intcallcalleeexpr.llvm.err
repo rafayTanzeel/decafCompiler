@@ -9,7 +9,6 @@ entry:
   %a2 = load i32, i32* %a1
   %addtmp = add i32 %a2, 10
   call void @print_int(i32 %addtmp)
-  ret void
 }
 
 define i32 @main() {

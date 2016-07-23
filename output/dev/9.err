@@ -19,7 +19,6 @@ declare void @print_int(i32)
 define void @cr() {
 entry:
   call void @print_string(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @globalstring, i32 0, i32 0))
-  ret void
 }
 
 define void @displayList(i32 %start, i32 %len) {
@@ -30,7 +29,6 @@ entry:
   store i32 %len, i32* %len2
   %j = alloca i32
   call void @print_string(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @globalstring.1, i32 0, i32 0))
-  ret void
 }
 
 define void @initList(i32 %size) {
@@ -38,6 +36,5 @@ entry:
   %size1 = alloca i32
   store i32 %size, i32* %size1
   %i = alloca i32
-  ret void
 }
 codegen failed

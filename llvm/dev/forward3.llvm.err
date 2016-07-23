@@ -12,7 +12,6 @@ entry:
   call void @print_int(i32 %a3)
   %b4 = load i32, i32* %b2
   call void @print_int(i32 %b4)
-  ret i32 0
 }
 
 define i32 @main() {

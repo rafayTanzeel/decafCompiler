@@ -14,9 +14,12 @@ declare void @print_string(i8*)
 define void @main() {
 entry:
   call void @print_string(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @globalstring, i32 0, i32 0))
-  ret void
+  ret i32 0
 }
-assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/escapes.llvm" -o "llvm/dev/escapes.llvm.bc" ... ok
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/escapes.llvm" -o "llvm/dev/escapes.llvm.bc" ... failed (1)
+/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/escapes.llvm:10:7: error: value doesn't match function result type 'void'
+  ret i32 0
+      ^
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/escapes.llvm.bc" -o "llvm/dev/escapes.llvm.s" ... ok
 linking:gcc -o "llvm/dev/escapes.llvm.exec" "llvm/dev/escapes.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
 running:llvm/dev/escapes.llvm.exec ... ok

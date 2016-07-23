@@ -4,5 +4,5 @@
 
 define void @main() {
 entry:
-  ret void
+  ret i32 0
 }

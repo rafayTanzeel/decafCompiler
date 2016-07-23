@@ -1,0 +1,3 @@
+/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/intcallchain2.llvm:11:1: error: expected instruction opcode
+}
+^

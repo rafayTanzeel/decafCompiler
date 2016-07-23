@@ -14,7 +14,7 @@ entry:
 
 define void @main() {
 entry:
-  ret void
+  ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/if-func3.llvm" -o "llvm/dev/if-func3.llvm.bc" ... failed (1)
 /usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/if-func3.llvm:5:7: error: value doesn't match function result type 'i1'

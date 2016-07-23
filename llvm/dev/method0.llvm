@@ -9,7 +9,6 @@ entry:
   call void @print_int(i32 1)
   %x1 = load i32, i32* %x
   call void @print_int(i32 %x1)
-  ret void
 }
 
 define i32 @main() {

@@ -351,10 +351,10 @@ public:
 			}
 			llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
 			llvm::Function *func = Builder.GetInsertBlock()->getParent();
-			if(symtbl->back()["return"]==NULL){
-			if(func->getReturnType()==Builder.getInt32Ty()) {Builder.CreateRet(Builder.getInt32(0));}
-			else if(func->getReturnType()==Builder.getInt1Ty()) {Builder.CreateRet(Builder.getInt1(1));}
-			else Builder.CreateRet(NULL);}
+			//if(symtbl->back()["return"]==NULL){
+			//if(func->getReturnType()==Builder.getInt32Ty()) {Builder.CreateRet(Builder.getInt32(0));}
+			//else if(func->getReturnType()==Builder.getInt1Ty()) {Builder.CreateRet(Builder.getInt1(1));}
+			//else Builder.CreateRet(NULL);}
 			return val;
 		}
 };

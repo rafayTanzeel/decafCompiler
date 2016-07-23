@@ -16,7 +16,6 @@ entry:
   call void @print_int(i32 1)
   %x1 = load i32, i32* %x
   call void @print_int(i32 %x1)
-  ret void
 }
 
 define i32 @main() {
@@ -28,7 +27,10 @@ entry:
   call void @print_int(i32 %x1)
   ret i32 0
 }
-assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/method0.llvm" -o "llvm/dev/method0.llvm.bc" ... ok
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/method0.llvm" -o "llvm/dev/method0.llvm.bc" ... failed (1)
+/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/method0.llvm:12:1: error: expected instruction opcode
+}
+^
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/method0.llvm.bc" -o "llvm/dev/method0.llvm.s" ... ok
 linking:gcc -o "llvm/dev/method0.llvm.exec" "llvm/dev/method0.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
 running:llvm/dev/method0.llvm.exec ... ok

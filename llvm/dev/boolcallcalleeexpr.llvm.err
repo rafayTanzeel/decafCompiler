@@ -9,7 +9,6 @@ entry:
   %a2 = load i1, i1* %a1
   %zexttmp = zext i1 %a2 to i32
   call void @print_int(i32 %zexttmp)
-  ret void
 }
 
 define i32 @main() {

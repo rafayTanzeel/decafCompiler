@@ -12,7 +12,6 @@ declare void @print_int(i32)
 define void @test() {
 entry:
   call void @print_int(i32 0)
-  ret void
 }
 
 define i32 @main() {
@@ -20,7 +19,10 @@ entry:
   call void @test()
   ret i32 0
 }
-assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/call0.llvm" -o "llvm/dev/call0.llvm.bc" ... ok
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/call0.llvm" -o "llvm/dev/call0.llvm.bc" ... failed (1)
+/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/call0.llvm:8:1: error: expected instruction opcode
+}
+^
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/call0.llvm.bc" -o "llvm/dev/call0.llvm.s" ... ok
 linking:gcc -o "llvm/dev/call0.llvm.exec" "llvm/dev/call0.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
 running:llvm/dev/call0.llvm.exec ... ok
