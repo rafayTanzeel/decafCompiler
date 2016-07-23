@@ -4,6 +4,31 @@ llc: /usr/lib/llvm-3.8/bin/llc
 cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-11)
-4: syntax error at char 1
-codegen failed
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
+; ModuleID = 'QuickSort'
+
+define void @initList(i32 %size) {
+entry:
+  %size1 = alloca i32
+  store i32 %size, i32* %size1
+  %i = alloca i32
+  ret void
+}
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/test/aqs-5.llvm" -o "llvm/test/aqs-5.llvm.bc" ... ok
+converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/test/aqs-5.llvm.bc" -o "llvm/test/aqs-5.llvm.s" ... ok
+linking:gcc -o "llvm/test/aqs-5.llvm.exec" "llvm/test/aqs-5.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... failed (1)
+/usr/lib/gcc/x86_64-linux-gnu/5/../../../x86_64-linux-gnu/crt1.o: In function `_start':
+(.text+0x20): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+running:llvm/test/aqs-5.llvm.exec ...Traceback (most recent call last):
+  File "/home/rafay/Desktop/decafCompiler/answer/llvm-run", line 172, in <module>
+    result &= run("running", "%s.llvm.exec" % (out_prefix), ".run", None, out_prefix)
+  File "/home/rafay/Desktop/decafCompiler/answer/llvm-run", line 90, in run
+    retval = subprocess.call(shlex.split(cmd), stdin=infile, stdout=outoutfile, stderr=outerrfile)
+  File "/usr/lib/python2.7/subprocess.py", line 523, in call
+    return Popen(*popenargs, **kwargs).wait()
+  File "/usr/lib/python2.7/subprocess.py", line 711, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1340, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory

@@ -1,7 +1,11 @@
-5: syntax error at char 1
-; ModuleID = 'Test'
+; ModuleID = 'C'
 
 define void @f() {
+entry:
+  ret void
+}
+
+define void @main() {
 entry:
   ret void
 }

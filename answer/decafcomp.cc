@@ -628,6 +628,82 @@ public:
 };
 
 
+class BreakStatementAST : public decafAST {
+public:
+	string str() { return "BreakStmt"; }
+	llvm::Value *Codegen() { 
+				llvm::Value *val = NULL;
+				return val;
+		}
+};
+
+class ContinueStatementAST : public decafAST {
+public:
+	string str() { return "ContinueStmt"; }
+	llvm::Value *Codegen() { 
+				llvm::Value *val = NULL;
+				return val;
+		}
+};
+
+
+
+
+class whileStatementAST : public decafAST {
+	string condition;
+	decafStmtList* while_block;
+
+public:
+	whileStatementAST(string condition, decafStmtList* while_block):condition(condition), while_block(while_block){}
+
+	~whileStatementAST() {
+		if (while_block != NULL) delete while_block;
+	}
+
+	string str() { 
+		return string("WhileStmt") + "(" + condition + ',' + getString(while_block) + ")";
+	}
+	llvm::Value *Codegen() { 
+				llvm::Value *val = NULL;
+				return val;
+		}
+};
+
+
+class forStatmentAST : public decafAST {
+	string expr;
+	decafStmtList* pre_assign_list;
+	decafStmtList* loop_assign_list;
+	decafStmtList* block;
+public:
+	forStatmentAST(string expr, decafStmtList* pre_assign_list, decafStmtList* loop_assign_list, decafStmtList* block) : expr(expr), pre_assign_list(pre_assign_list), loop_assign_list(loop_assign_list), block(block) {}
+	
+	string str() {
+		return string("ForStmt") + "(" + getString(pre_assign_list) + ',' + expr + ',' + getString(loop_assign_list) + ',' + getString(block)+")";
+	}
+	llvm::Value *Codegen() { 
+				llvm::Value *val = NULL;
+				return val;
+		}
+};
+
+
+class ifStatmentAST : public decafAST {
+	string expr;
+	decafAST* if_block;
+	decafAST* else_block;
+public:
+	ifStatmentAST(string expr, decafAST* if_block, decafAST* else_block) : expr(expr), if_block(if_block), else_block(else_block) {}
+
+	string str() {
+		return string("IfStmt") + "(" + expr + ',' + getString(if_block) + ',' + getString(else_block) + ")";
+	}
+	llvm::Value *Codegen() { 
+				llvm::Value *val = NULL;
+				return val;
+		}
+};
+
 
 class ReturnStatementAST : public decafAST {
 	ExpressionAST* expr;

@@ -126,9 +126,9 @@ void idExist(string ident){
 %token T_DOT
 %token <idval> T_ID
 
-%type <ast> extern_list extern_def extern_type comma_sep_extern_types extern_types_func decafpackage field_decls field_decl method_arg method_list_arg method_decls method_decl comma_sep_id_type comma_sep_method_arg idtypes_func_args var_decls var_decl block statements statement method_call method_block assign Lvalue return_statement
+%type <ast> extern_list extern_def extern_type comma_sep_extern_types extern_types_func decafpackage field_decls field_decl method_arg method_list_arg method_decls method_decl comma_sep_id_type comma_sep_method_arg idtypes_func_args var_decls var_decl block statements statement method_call method_block  assign break_statement continue_statement while_statement Lvalue for_statement init post return_statement if_statement
 %type <sval> extra_id_comma id_queried  method_type type
-%type <east> expr exprConstant rtrop rtropin rvalue
+%type <east> expr exprConstant check rtrop rtropin rvalue
 
 %nonassoc "if_then"
 %nonassoc T_ELSE
@@ -386,12 +386,37 @@ var_decl: T_VAR T_ID type T_SEMICOLON {
 
 statements: {$$=new decafStmtList();} | statement statements { decafStmtList *slist = new decafStmtList(); slist->push_back($1); if($2!=NULL) slist->push_back($2); $$=slist;}
 
+
 statement: block
 	 | method_call T_SEMICOLON
+	 | if_statement
 	 | assign T_SEMICOLON //{decafStmtList *slist = new decafStmtList(); slist->push_back($1); $$=$1;}
+	 | break_statement T_SEMICOLON 
+	 | continue_statement T_SEMICOLON
+	 | while_statement
+	 | for_statement
 	 | return_statement T_SEMICOLON
 
 
+if_statement: T_IF T_LPAREN expr T_RPAREN block %prec "if_then" {$$=new ifStatmentAST($3->str(), (BlockAST*)$5, NULL);}
+	    | T_IF T_LPAREN expr T_RPAREN block T_ELSE block {$$=new ifStatmentAST($3->str(), (BlockAST*)$5, (BlockAST*)$7);}
+
+
+
+for_statement: T_FOR T_LPAREN init T_SEMICOLON check T_SEMICOLON post T_RPAREN block {$$=new forStatmentAST($5->str(),(decafStmtList*)$3,(decafStmtList*)$7, (decafStmtList*)$9);  delete $5;}
+init: init T_COMMA assign {decafStmtList *slist = new decafStmtList(); slist->push_back($3); slist->push_back($1); $$=slist;}
+    | assign
+check: expr
+post: post T_COMMA assign {decafStmtList *slist = new decafStmtList(); slist->push_back($3); slist->push_back($1); $$=slist;}
+    | assign
+
+
+
+while_statement: T_WHILE T_LPAREN expr T_RPAREN block {$$=new whileStatementAST($3->str(), (decafStmtList*)$5);}
+
+break_statement: T_BREAK {$$=new BreakStatementAST();}
+
+continue_statement: T_CONTINUE {$$=new ContinueStatementAST;}
 
 
 
