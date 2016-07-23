@@ -65,6 +65,7 @@ void idExist(string ident){
 
 #include "decafcomp.cc"
 
+decafAST* TheMainFunction = NULL;
 
 %}
 
@@ -164,7 +165,7 @@ program: extern_list decafpackage
     }
 
 
-decafpackage: T_PACKAGE T_ID begin_block field_decls method_decls end_block
+decafpackage: T_PACKAGE T_ID begin_block field_decls method_decls { TheMainFunction->Codegen(); } end_block
     { $$ = new PackageAST(*$2, (decafStmtList *)$4, (decafStmtList *)$5); delete $2; }
 //    | T_PACKAGE T_ID T_LCB ignore T_RCB
 //    { $$ = new PackageAST(*$2, new decafStmtList(), new decafStmtList()); delete $2; }
@@ -334,7 +335,7 @@ comma_sep_id_type: T_ID type T_COMMA comma_sep_id_type {
 //Method Declaration
 method_decls: {$$ = NULL;} | method_decl method_decls { decafStmtList *slist = new decafStmtList(); slist->push_back($1); if($2!=NULL) slist->push_back($2); $$ = slist; }
 
-method_decl: T_FUNC T_ID T_LPAREN idtypes_func_args T_RPAREN method_type method_block {$$= (decafAST*)new MethodDeclAST(*$2, *$6, (decafStmtList*)$4, (decafStmtList*)$7); $$->Codegen(); }
+method_decl: T_FUNC T_ID T_LPAREN idtypes_func_args T_RPAREN method_type method_block {$$= (decafAST*)new MethodDeclAST(*$2, *$6, (decafStmtList*)$4, (decafStmtList*)$7); if(*$2=="main") {TheMainFunction=$$; } else {$$->Codegen();} }
 
 method_block: begin_block var_decls statements T_RCB {$$=new MethodBlockAST((decafStmtList*)$2,(decafStmtList*)$3); }
 
@@ -468,17 +469,10 @@ method_call: T_ID T_LPAREN method_list_arg T_RPAREN {
 
 	decafStmtList *slist = new decafStmtList();
 
-	descriptor* funcLookup=access_symtbl(*$1);
-
-
-	if(funcLookup==NULL) throw runtime_error("function not defined"); 
-
-
-	//(llvm:Function*)
-	$$=new MethodCall(*$1, (decafStmtList*)$3, funcLookup);
+	
+	$$=new MethodCall(*$1, (decafStmtList*)$3);
 
 	
-	//$$->Codegen();
 }
 method_arg: expr {
 		decafStmtList *slist = new decafStmtList(); 

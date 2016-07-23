@@ -6,13 +6,13 @@ define i32 @main() {
 entry:
   %x = alloca i32
   store i32 0, i32* %x
-  %tmp = load i32, i32* %x
-  call void @print_int(i32 %tmp)
+  %x1 = load i32, i32* %x
+  call void @print_int(i32 %x1)
   store i32 12345, i32* %x
-  %tmp1 = load i32, i32* %x
-  call void @print_int(i32 %tmp1)
+  %x2 = load i32, i32* %x
+  call void @print_int(i32 %x2)
   store i32 -12345, i32* %x
-  %tmp2 = load i32, i32* %x
-  call void @print_int(i32 %tmp2)
+  %x3 = load i32, i32* %x
+  call void @print_int(i32 %x3)
   ret i32 0
 }

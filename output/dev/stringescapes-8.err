@@ -7,13 +7,13 @@ stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
 generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
 ; ModuleID = 'Test'
 
-@globalstring = private unnamed_addr constant [1 x i8] zeroinitializer
+@globalstring = private unnamed_addr constant [2 x i8] c"\5C\00"
 
 declare void @print_string(i8*)
 
 define i32 @main() {
 entry:
-  call void @print_string(i8* getelementptr inbounds ([1 x i8], [1 x i8]* @globalstring, i32 0, i32 0))
+  call void @print_string(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @globalstring, i32 0, i32 0))
   ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/stringescapes-8.llvm" -o "llvm/dev/stringescapes-8.llvm.bc" ... ok

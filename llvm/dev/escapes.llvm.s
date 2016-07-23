@@ -20,8 +20,8 @@ main:                                   # @main
 	.type	.Lglobalstring,@object  # @globalstring
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .Lglobalstring:
-	.asciz	"\tvrnafb"
-	.size	.Lglobalstring, 8
+	.asciz	"\t\013\r\n\007\f\b\\"
+	.size	.Lglobalstring, 9
 
 
 	.section	".note.GNU-stack","",@progbits

@@ -13,8 +13,8 @@ define i32 @main() {
 entry:
   %size = alloca i32
   store i32 0, i32* %size
-  %tmp = load i32, i32* %size
-  call void @print_int(i32 %tmp)
+  %size1 = load i32, i32* %size
+  call void @print_int(i32 %size1)
   ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/arith4.llvm" -o "llvm/dev/arith4.llvm.bc" ... ok

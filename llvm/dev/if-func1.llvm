@@ -1,0 +1,11 @@
+; ModuleID = 'C'
+
+define void @f() {
+entry:
+  ret void
+}
+
+define void @main() {
+entry:
+  ret void
+}

@@ -5,5 +5,4 @@ cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
 generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-11)
-2: syntax error at char 1
 codegen failed

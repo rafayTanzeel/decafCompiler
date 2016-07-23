@@ -19,8 +19,8 @@ entry:
   %x = alloca i32
   %calltmp = call i32 @test()
   store i32 %calltmp, i32* %x
-  %tmp = load i32, i32* %x
-  call void @print_int(i32 %tmp)
+  %x1 = load i32, i32* %x
+  call void @print_int(i32 %x1)
   ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/returnmismatch-intofchar-ok.llvm" -o "llvm/dev/returnmismatch-intofchar-ok.llvm.bc" ... ok

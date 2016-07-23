@@ -13,13 +13,13 @@ define i32 @main() {
 entry:
   %x = alloca i32
   store i32 10, i32* %x
-  %tmp = load i32, i32* %x
-  call void @print_int(i32 %tmp)
-  %tmp1 = load i32, i32* %x
-  %addtmp = add i32 %tmp1, 10
+  %x1 = load i32, i32* %x
+  call void @print_int(i32 %x1)
+  %x2 = load i32, i32* %x
+  %addtmp = add i32 %x2, 10
   store i32 %addtmp, i32* %x
-  %tmp2 = load i32, i32* %x
-  call void @print_int(i32 %tmp2)
+  %x3 = load i32, i32* %x
+  call void @print_int(i32 %x3)
   ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/expr-testfile-9.llvm" -o "llvm/dev/expr-testfile-9.llvm.bc" ... ok

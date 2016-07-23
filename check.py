@@ -60,6 +60,7 @@ class Check:
                     output_data = map(lambda x: x.strip(), zip_data[testfile_key].splitlines())
                     diff_lines = list(difflib.unified_diff(ref_data, output_data, "reference", "your-output", lineterm=''))
                     if len(diff_lines) > 0:
+			print ref.name
                         logging.info("Diff between reference and your output for {0}".format(testfile_key))
                         logging.info("{0}{1}".format(self.linesep, self.linesep.join(list(diff_lines))))
                     else:

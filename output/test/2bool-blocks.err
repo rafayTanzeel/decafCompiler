@@ -20,16 +20,16 @@ entry:
   store i1 false, i1* %y1
   store i32 1, i32* %p
   store i32 1, i32* %q
-  %tmp = load i32, i32* %p
-  call void @print_int(i32 %tmp)
-  %tmp2 = load i32, i32* %q
-  call void @print_int(i32 %tmp2)
-  %tmp3 = load i1, i1* %x
-  %zexttmp = zext i1 %tmp3 to i32
+  %p2 = load i32, i32* %p
+  call void @print_int(i32 %p2)
+  %q3 = load i32, i32* %q
+  call void @print_int(i32 %q3)
+  %x4 = load i1, i1* %x
+  %zexttmp = zext i1 %x4 to i32
   call void @print_int(i32 %zexttmp)
-  %tmp4 = load i1, i1* %y1
-  %zexttmp5 = zext i1 %tmp4 to i32
-  call void @print_int(i32 %zexttmp5)
+  %y5 = load i1, i1* %y1
+  %zexttmp6 = zext i1 %y5 to i32
+  call void @print_int(i32 %zexttmp6)
   ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/test/2bool-blocks.llvm" -o "llvm/test/2bool-blocks.llvm.bc" ... ok

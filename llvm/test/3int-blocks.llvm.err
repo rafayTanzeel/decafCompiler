@@ -11,19 +11,19 @@ entry:
   %y1 = alloca i32
   store i32 1, i32* %x
   store i32 1, i32* %y1
-  %tmp = load i32, i32* %x
-  call void @print_int(i32 %tmp)
-  %tmp2 = load i32, i32* %y1
-  call void @print_int(i32 %tmp2)
-  %x3 = alloca i32
+  %x2 = load i32, i32* %x
+  call void @print_int(i32 %x2)
+  %y3 = load i32, i32* %y1
+  call void @print_int(i32 %y3)
+  %x4 = alloca i32
   store i32 1, i32* %p
-  store i32 1, i32* %x3
+  store i32 1, i32* %x4
   store i32 1, i32* %y1
-  %tmp4 = load i32, i32* %p
-  call void @print_int(i32 %tmp4)
-  %tmp5 = load i32, i32* %x3
-  call void @print_int(i32 %tmp5)
-  %tmp6 = load i32, i32* %y1
-  call void @print_int(i32 %tmp6)
+  %p5 = load i32, i32* %p
+  call void @print_int(i32 %p5)
+  %x6 = load i32, i32* %x4
+  call void @print_int(i32 %x6)
+  %y7 = load i32, i32* %y1
+  call void @print_int(i32 %y7)
   ret i32 0
 }

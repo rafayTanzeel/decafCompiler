@@ -21,8 +21,8 @@ main:                                   # @main
 	.type	.Lglobalstring,@object  # @globalstring
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .Lglobalstring:
-	.zero	1
-	.size	.Lglobalstring, 1
+	.asciz	"\\"
+	.size	.Lglobalstring, 2
 
 
 	.section	".note.GNU-stack","",@progbits

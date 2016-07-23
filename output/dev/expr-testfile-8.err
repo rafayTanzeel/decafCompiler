@@ -16,17 +16,17 @@ entry:
   store i32 958, i32* %x
   %y1 = alloca i32
   %x2 = alloca i32
-  %tmp = load i32, i32* %x2
-  %multmp = mul i32 %tmp, -30
+  %x3 = load i32, i32* %x2
+  %multmp = mul i32 %x3, -30
   %addtmp = add i32 %multmp, 80
   store i32 %addtmp, i32* %y1
-  %tmp3 = load i32, i32* %y1
-  %tmp4 = load i32, i32* %y1
-  %negtmp = sub i32 0, %tmp4
+  %y4 = load i32, i32* %y1
+  %y5 = load i32, i32* %y1
+  %negtmp = sub i32 0, %y5
   store i32 %negtmp, i32* %x2
   store i1 false, i1* %y
-  %tmp5 = load i32, i32* %x
-  call void @print_int(i32 %tmp5)
+  %x6 = load i32, i32* %x
+  call void @print_int(i32 %x6)
   ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/expr-testfile-8.llvm" -o "llvm/dev/expr-testfile-8.llvm.bc" ... ok

@@ -4,7 +4,34 @@ llc: /usr/lib/llvm-3.8/bin/llc
 cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-6)
-terminate called after throwing an instance of 'std::out_of_range'
-  what():  basic_string::replace: __pos (which is 18446744073709551615) > this->size() (which is 3)
-codegen failed
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
+; ModuleID = 'foo'
+
+@globalstring = private unnamed_addr constant [4 x i8] c"foo\00"
+
+declare void @print_int(i32)
+
+declare void @print_string(i8*)
+
+define i1 @foo() {
+entry:
+  call void @print_string(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @globalstring, i32 0, i32 0))
+  ret i1 false
+}
+
+define i32 @main() {
+entry:
+  %flag = alloca i1
+  %calltmp = call i1 @foo()
+  %andtmp = and i1 %calltmp, false
+  %ortmp = or i1 true, %andtmp
+  store i1 %ortmp, i1* %flag
+  %flag1 = load i1, i1* %flag
+  %zexttmp = zext i1 %flag1 to i32
+  call void @print_int(i32 %zexttmp)
+  ret i32 0
+}
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/skct.llvm" -o "llvm/dev/skct.llvm.bc" ... ok
+converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/skct.llvm.bc" -o "llvm/dev/skct.llvm.s" ... ok
+linking:gcc -o "llvm/dev/skct.llvm.exec" "llvm/dev/skct.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
+running:llvm/dev/skct.llvm.exec ... ok

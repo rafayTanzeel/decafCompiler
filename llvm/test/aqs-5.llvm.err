@@ -1,9 +1,0 @@
-; ModuleID = 'QuickSort'
-
-define void @initList(i32 %size) {
-entry:
-  %size1 = alloca i32
-  store i32 %size, i32* %size1
-  %i = alloca i32
-  ret void
-}

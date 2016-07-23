@@ -22,8 +22,8 @@ main:                                   # @main
 	.section	.rodata.str1.16,"aMS",@progbits,1
 	.align	16
 .Lglobalstring:
-	.asciz	"1\t2v3r4n5a6f7b89\"10"
-	.size	.Lglobalstring, 20
+	.asciz	"1\t2\0133\r4\n5\0076\f7\b8\\9\"10"
+	.size	.Lglobalstring, 21
 
 
 	.section	".note.GNU-stack","",@progbits

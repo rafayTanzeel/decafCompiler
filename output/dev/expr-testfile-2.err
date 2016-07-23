@@ -15,21 +15,21 @@ entry:
   %y = alloca i1
   %z = alloca i1
   store i32 958, i32* %x
-  %tmp = load i32, i32* %x
-  %tmp1 = load i32, i32* %x
-  %negtmp = sub i32 0, %tmp1
+  %x1 = load i32, i32* %x
+  %x2 = load i32, i32* %x
+  %negtmp = sub i32 0, %x2
   store i32 %negtmp, i32* %x
   store i1 true, i1* %y
   store i1 false, i1* %z
-  %tmp2 = load i1, i1* %y
-  %andtmp = and i1 true, %tmp2
-  %tmp3 = load i1, i1* %z
-  %ortmp = or i1 %andtmp, %tmp3
+  %y3 = load i1, i1* %y
+  %andtmp = and i1 true, %y3
+  %z4 = load i1, i1* %z
+  %ortmp = or i1 %andtmp, %z4
   store i1 %ortmp, i1* %y
-  %tmp4 = load i32, i32* %x
-  %tmp5 = load i32, i32* %x
-  %negtmp6 = sub i32 0, %tmp5
-  call void @print_int(i32 %negtmp6)
+  %x5 = load i32, i32* %x
+  %x6 = load i32, i32* %x
+  %negtmp7 = sub i32 0, %x6
+  call void @print_int(i32 %negtmp7)
   ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/expr-testfile-2.llvm" -o "llvm/dev/expr-testfile-2.llvm.bc" ... ok

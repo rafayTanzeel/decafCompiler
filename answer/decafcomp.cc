@@ -362,9 +362,9 @@ public:
 class MethodCall : public decafAST {
 	string name;
 	decafStmtList* method_arg_list;
-	descriptor* func;
+	
 public:
-	MethodCall(string name, decafStmtList* method_arg_list, descriptor* func) : name(name), method_arg_list(method_arg_list), func(func){}
+	MethodCall(string name, decafStmtList* method_arg_list) : name(name), method_arg_list(method_arg_list) {}
 
 	~MethodCall() {
 		if (method_arg_list != NULL) delete method_arg_list;
@@ -373,6 +373,8 @@ public:
 		return string("MethodCall") + "(" + name + ',' + getString(method_arg_list) + ")";
 	}
 	llvm::Value *Codegen() { 
+
+			descriptor* func=access_symtbl(name);
 
 			if(func==NULL) throw runtime_error("function not found"); 
 			llvm::Function *call=(llvm::Function *)func->getAddress();
@@ -494,7 +496,7 @@ public:
 				if(gl==NULL){
 					throw runtime_error("unable to get address"); 
 				}
-				valueStorage = Builder.CreateLoad(gl, "tmp");
+				valueStorage = Builder.CreateLoad(gl, id);
 				return valueStorage;
 		}
 		if (op=="MethodCall") return methodReturn->Codegen();
@@ -544,25 +546,39 @@ public:
 
 				arg=arg.substr(1,arg.length()-2);
 
-				int position =arg.find("\\"); // find first space
-				int size=arg.length();
-	 
-			
-				char c = arg.at(position + 1);
+	 			stringstream ss;
 
-					switch (c) {
-					   case 'n': arg.replace(position, 2, "\n"); break;
-					   case 'r': arg.replace(position, 2, "\r"); break;
-					   case 't': arg.replace(position, 2, "\t"); break;
-					   case 'v': arg.replace(position, 2, "\v"); break;
-					   case 'f': arg.replace(position, 2, "\f"); break;
-					   case 'a': arg.replace(position, 2, "\a"); break;
-					   case 'b': arg.replace(position, 2, "\b"); break;
-					   case '\'': arg.replace(position, 2, "'"); break;
-				  }
+				size_t size = arg.length();
 
-				arg.erase(std::remove(arg.begin(), arg.end(), '\\'), arg.end());
+				for(int i=0; i<size; i++){
 				
+				char c = arg[i];
+
+				if(c!='\\'){
+					ss<<c;
+				}
+				else{
+			
+					char c = arg[i + 1];
+
+						switch (c) {
+						   case 'n': ss<<'\n'; break;
+						   case 'r': ss<<'\r'; break;
+						   case 't': ss<<'\t'; break;
+						   case 'v': ss<<'\v'; break;
+						   case 'f': ss<<'\f'; break;
+						   case 'a': ss<<'\a'; break;
+						   case 'b': ss<<'\b'; break;
+						   case '\'': ss<<'\''; break;
+						   case '"': ss<<'"'; break;
+						   default: ss<<'\\'; 
+					  }
+					i++;
+				    }
+
+				}
+
+				arg = ss.str();
 
 				llvm::Value *GlobalStr = Builder.CreateGlobalString(arg, "globalstring"); 
 

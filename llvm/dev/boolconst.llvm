@@ -8,7 +8,7 @@ entry:
   call void @print_int(i32 1)
   call void @print_int(i32 0)
   store i32 3, i32* %x
-  %tmp = load i32, i32* %x
-  call void @print_int(i32 %tmp)
+  %x1 = load i32, i32* %x
+  call void @print_int(i32 %x1)
   ret i32 0
 }
