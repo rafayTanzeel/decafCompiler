@@ -1,0 +1,7 @@
+5: syntax error at char 1
+; ModuleID = 'Test'
+
+define void @f() {
+entry:
+  ret void
+}

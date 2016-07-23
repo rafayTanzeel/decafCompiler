@@ -1,0 +1,7 @@
+6: syntax error at char 1
+; ModuleID = 'Test'
+
+define i32 @f() {
+entry:
+  ret i32 1
+}

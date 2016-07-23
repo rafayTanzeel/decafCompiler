@@ -1,0 +1,35 @@
+; ModuleID = 'Test'
+
+declare void @print_int(i32)
+
+define i32 @main() {
+entry:
+  %p = alloca i32
+  %q = alloca i32
+  %r = alloca i32
+  %s = alloca i32
+  %tmp = load i32, i32* %p
+  call void @print_int(i32 %tmp)
+  %tmp1 = load i32, i32* %q
+  call void @print_int(i32 %tmp1)
+  %tmp2 = load i32, i32* %r
+  call void @print_int(i32 %tmp2)
+  %tmp3 = load i32, i32* %s
+  call void @print_int(i32 %tmp3)
+  store i32 1, i32* %p
+  %tmp4 = load i32, i32* %p
+  store i32 %tmp4, i32* %q
+  %tmp5 = load i32, i32* %q
+  store i32 %tmp5, i32* %r
+  %tmp6 = load i32, i32* %r
+  store i32 %tmp6, i32* %s
+  %tmp7 = load i32, i32* %p
+  call void @print_int(i32 %tmp7)
+  %tmp8 = load i32, i32* %q
+  call void @print_int(i32 %tmp8)
+  %tmp9 = load i32, i32* %r
+  call void @print_int(i32 %tmp9)
+  %tmp10 = load i32, i32* %s
+  call void @print_int(i32 %tmp10)
+  ret i32 0
+}

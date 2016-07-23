@@ -1,0 +1,29 @@
+output prefix: llvm/dev/intconst-var
+llvmas: /usr/lib/llvm-3.8/bin/llvm-as
+llc: /usr/lib/llvm-3.8/bin/llc
+cc: gcc
+codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
+stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
+; ModuleID = 'Test'
+
+declare void @print_int(i32)
+
+define i32 @main() {
+entry:
+  %x = alloca i32
+  store i32 0, i32* %x
+  %tmp = load i32, i32* %x
+  call void @print_int(i32 %tmp)
+  store i32 12345, i32* %x
+  %tmp1 = load i32, i32* %x
+  call void @print_int(i32 %tmp1)
+  store i32 -12345, i32* %x
+  %tmp2 = load i32, i32* %x
+  call void @print_int(i32 %tmp2)
+  ret i32 0
+}
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/intconst-var.llvm" -o "llvm/dev/intconst-var.llvm.bc" ... ok
+converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/intconst-var.llvm.bc" -o "llvm/dev/intconst-var.llvm.s" ... ok
+linking:gcc -o "llvm/dev/intconst-var.llvm.exec" "llvm/dev/intconst-var.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
+running:llvm/dev/intconst-var.llvm.exec ... ok

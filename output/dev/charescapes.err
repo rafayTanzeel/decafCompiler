@@ -1,0 +1,47 @@
+output prefix: llvm/dev/charescapes
+llvmas: /usr/lib/llvm-3.8/bin/llvm-as
+llc: /usr/lib/llvm-3.8/bin/llc
+cc: gcc
+codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
+stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
+; ModuleID = 'Test'
+
+declare void @print_int(i32)
+
+define i32 @main() {
+entry:
+  %c = alloca i32
+  store i32 9, i32* %c
+  %tmp = load i32, i32* %c
+  call void @print_int(i32 %tmp)
+  store i32 11, i32* %c
+  %tmp1 = load i32, i32* %c
+  call void @print_int(i32 %tmp1)
+  store i32 13, i32* %c
+  %tmp2 = load i32, i32* %c
+  call void @print_int(i32 %tmp2)
+  store i32 10, i32* %c
+  %tmp3 = load i32, i32* %c
+  call void @print_int(i32 %tmp3)
+  store i32 7, i32* %c
+  %tmp4 = load i32, i32* %c
+  call void @print_int(i32 %tmp4)
+  store i32 12, i32* %c
+  %tmp5 = load i32, i32* %c
+  call void @print_int(i32 %tmp5)
+  store i32 8, i32* %c
+  %tmp6 = load i32, i32* %c
+  call void @print_int(i32 %tmp6)
+  store i32 92, i32* %c
+  %tmp7 = load i32, i32* %c
+  call void @print_int(i32 %tmp7)
+  store i32 39, i32* %c
+  %tmp8 = load i32, i32* %c
+  call void @print_int(i32 %tmp8)
+  ret i32 0
+}
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/charescapes.llvm" -o "llvm/dev/charescapes.llvm.bc" ... ok
+converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/charescapes.llvm.bc" -o "llvm/dev/charescapes.llvm.s" ... ok
+linking:gcc -o "llvm/dev/charescapes.llvm.exec" "llvm/dev/charescapes.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
+running:llvm/dev/charescapes.llvm.exec ... ok

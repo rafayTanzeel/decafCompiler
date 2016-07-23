@@ -1,0 +1,23 @@
+output prefix: llvm/dev/11
+llvmas: /usr/lib/llvm-3.8/bin/llvm-as
+llc: /usr/lib/llvm-3.8/bin/llc
+cc: gcc
+codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
+stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (1)
+13: syntax error at char 1
+; ModuleID = 'Test'
+
+@list = global [100 x i32] zeroinitializer
+@globalstring = private unnamed_addr constant [2 x i8] c"\0A\00"
+
+declare void @print_string(i8*)
+
+declare void @print_int(i32)
+
+define void @cr() {
+entry:
+  call void @print_string(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @globalstring, i32 0, i32 0))
+  ret void
+}
+codegen failed

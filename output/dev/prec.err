@@ -1,0 +1,36 @@
+output prefix: llvm/dev/prec
+llvmas: /usr/lib/llvm-3.8/bin/llvm-as
+llc: /usr/lib/llvm-3.8/bin/llc
+cc: gcc
+codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
+stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
+; ModuleID = 'prec'
+
+declare void @print_int(i32)
+
+define i32 @main() {
+entry:
+  %a = alloca i32
+  %b = alloca i32
+  %d = alloca i32
+  %c = alloca i1
+  store i32 3, i32* %a
+  store i32 7, i32* %b
+  store i1 true, i1* %c
+  store i32 -3, i32* %d
+  %tmp = load i32, i32* %a
+  call void @print_int(i32 %tmp)
+  %tmp1 = load i32, i32* %b
+  call void @print_int(i32 %tmp1)
+  %tmp2 = load i1, i1* %c
+  %zexttmp = zext i1 %tmp2 to i32
+  call void @print_int(i32 %zexttmp)
+  %tmp3 = load i32, i32* %d
+  call void @print_int(i32 %tmp3)
+  ret i32 0
+}
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/prec.llvm" -o "llvm/dev/prec.llvm.bc" ... ok
+converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/prec.llvm.bc" -o "llvm/dev/prec.llvm.s" ... ok
+linking:gcc -o "llvm/dev/prec.llvm.exec" "llvm/dev/prec.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
+running:llvm/dev/prec.llvm.exec ... ok

@@ -1,0 +1,38 @@
+output prefix: llvm/dev/arith1
+llvmas: /usr/lib/llvm-3.8/bin/llvm-as
+llc: /usr/lib/llvm-3.8/bin/llc
+cc: gcc
+codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
+stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
+; ModuleID = 'foo'
+
+declare void @print_int(i32)
+
+define i32 @main() {
+entry:
+  %flag = alloca i1
+  %a = alloca i1
+  %b = alloca i1
+  %c = alloca i1
+  %size = alloca i32
+  store i1 true, i1* %a
+  store i1 false, i1* %b
+  store i1 true, i1* %c
+  %tmp = load i1, i1* %a
+  %tmp1 = load i1, i1* %b
+  %tmp2 = load i1, i1* %c
+  %tmp3 = load i1, i1* %c
+  %nottmp = xor i1 %tmp3, true
+  %andtmp = and i1 %tmp1, %nottmp
+  %ortmp = or i1 %tmp, %andtmp
+  store i1 %ortmp, i1* %flag
+  store i32 0, i32* %size
+  %tmp4 = load i32, i32* %size
+  call void @print_int(i32 %tmp4)
+  ret i32 0
+}
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/arith1.llvm" -o "llvm/dev/arith1.llvm.bc" ... ok
+converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/arith1.llvm.bc" -o "llvm/dev/arith1.llvm.s" ... ok
+linking:gcc -o "llvm/dev/arith1.llvm.exec" "llvm/dev/arith1.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
+running:llvm/dev/arith1.llvm.exec ... ok
