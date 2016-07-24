@@ -399,8 +399,8 @@ statement: block
 	 | return_statement T_SEMICOLON
 
 
-if_statement: T_IF T_LPAREN expr T_RPAREN block %prec "if_then" {$$=new ifStatmentAST($3->str(), (BlockAST*)$5, NULL);}
-	    | T_IF T_LPAREN expr T_RPAREN block T_ELSE block {$$=new ifStatmentAST($3->str(), (BlockAST*)$5, (BlockAST*)$7);}
+if_statement: T_IF T_LPAREN expr T_RPAREN block %prec "if_then" {$$=new ifStatmentAST((ExpressionAST*)$3, (BlockAST*)$5, NULL);}
+	    | T_IF T_LPAREN expr T_RPAREN block T_ELSE block {$$=new ifStatmentAST((ExpressionAST*)$3, (BlockAST*)$5, (BlockAST*)$7);}
 
 
 
@@ -520,7 +520,7 @@ expr: rvalue
       | expr T_DIV expr					{$$=new ExpressionAST("Div", $1, $3);}
       | expr T_LEFTSHIFT expr				{$$=new ExpressionAST("Leftshift", $1, $3);}
       | expr T_RIGHTSHIFT expr				{$$=new ExpressionAST("Rightshift", $1, $3);}
-      | expr T_MOD expr					{$$=new ExpressionAST("Mod", $1, $3);}
+      | expr T_MOD expr					{if($3->getResult()==0) $3->setResult(1); /*throw runtime_error("can't mod zero")*/; $$=new ExpressionAST("Mod", $1, $3);}
       | expr T_EQ expr					{$$=new ExpressionAST("Eq", $1, $3);}
       | expr T_NEQ expr					{$$=new ExpressionAST("Neq", $1, $3);}
       | expr T_LT expr					{$$=new ExpressionAST("Lt", $1, $3);}

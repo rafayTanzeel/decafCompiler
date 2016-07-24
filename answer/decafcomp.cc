@@ -484,6 +484,7 @@ public:
 	}
 
 	int getResult() { return result; }
+	void setResult(int arg) { result=arg; }
 	
 	llvm::Value *Codegen() {
 		if(!id.empty()){
@@ -705,17 +706,93 @@ public:
 
 
 class ifStatmentAST : public decafAST {
-	string expr;
+	ExpressionAST* expr;
 	decafAST* if_block;
 	decafAST* else_block;
 public:
-	ifStatmentAST(string expr, decafAST* if_block, decafAST* else_block) : expr(expr), if_block(if_block), else_block(else_block) {}
+	ifStatmentAST(ExpressionAST* expr, decafAST* if_block, decafAST* else_block) : expr(expr), if_block(if_block), else_block(else_block) {}
 
 	string str() {
-		return string("IfStmt") + "(" + expr + ',' + getString(if_block) + ',' + getString(else_block) + ")";
+		return string("IfStmt") + "(" + expr->str() + ',' + getString(if_block) + ',' + getString(else_block) + ")";
 	}
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
+
+				llvm::BasicBlock *entryBB = Builder.GetInsertBlock();
+				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
+				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
+				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", TheFunction);
+
+
+				
+
+
+				Builder.CreateBr(IfStartBB);
+				Builder.SetInsertPoint(IfStartBB);
+				
+				val=expr->Codegen();
+				
+
+				
+				//llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
+				//Builder.SetInsertPoint(IfTrueBB);
+				//llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifcont");
+				
+				
+
+				if(else_block!=NULL) {//Conditional
+
+						llvm::BasicBlock *IfFalseBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iffalse", TheFunction);
+
+						Builder.CreateCondBr(val, IfTrueBB, IfFalseBB);
+
+
+
+
+						//Builder.CreateBr(IfTrueBB);
+						Builder.SetInsertPoint(IfTrueBB);
+						if_block->Codegen();
+						Builder.CreateBr(EndBB);
+						//Builder.CreateCondBr(val, IfTrueBB, EndBB);
+
+
+						//Builder.CreateBr(IfFalseBB);
+						Builder.SetInsertPoint(IfFalseBB);
+						else_block->Codegen();
+						Builder.CreateBr(EndBB);
+						//Builder.CreateCondBr(val, IfFalseBB, EndBB);
+
+
+						//llvm::BasicBlock *IfFalseBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iffalse", TheFunction);
+						
+
+				} else{//True
+
+					//Builder.CreateBr(IfStartBB);
+
+					Builder.CreateBr(IfTrueBB);
+					Builder.SetInsertPoint(IfTrueBB);
+					if_block->Codegen();
+					Builder.CreateBr(EndBB);
+
+				}
+
+
+				Builder.SetInsertPoint(EndBB);
+				//Builder.CreateCondBr(val, IfTrueBB, EndBB);
+				
+				//Builder.CreateBr(EndBB);
+				//Builder.CreateCondBr(expr->Codegen(), IfTrueBB, EndBB);
+
+
+				//expr->Codegen();
+
+				
+				//llvm::BasicBlock *BB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
+				//Builder.SetInsertPoint(BB);
+
+
+
 				return val;
 		}
 };

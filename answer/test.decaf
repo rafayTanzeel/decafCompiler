@@ -1,9 +1,23 @@
-extern func print_string(string) void;
 extern func print_int(int) void;
 
-package QuickSort {
-	var x int;
-	func main() void
-	{
-	}
+package GreatestCommonDivisor {
+    var a int = 10;
+    var b int = 20;
+
+    func main() int {
+        var x, y, z int;
+        x = a;
+        y = b;
+       // z = gcd(x, y);
+
+        // print_int is part of the standard input-output library
+       // print_int(z);
+    }
+
+    // function that computes the greatest common divisor
+    func gcd(a int, b int) int {
+        if (b == 0) { return(a); }
+        else { return( gcd(b, a % b) ); }
+    }
 }
+
