@@ -335,7 +335,7 @@ comma_sep_id_type: T_ID type T_COMMA comma_sep_id_type {
 //Method Declaration
 method_decls: {$$ = NULL;} | method_decl method_decls { decafStmtList *slist = new decafStmtList(); slist->push_back($1); if($2!=NULL) slist->push_back($2); $$ = slist; }
 
-method_decl: T_FUNC T_ID T_LPAREN idtypes_func_args T_RPAREN method_type method_block {$$= (decafAST*)new MethodDeclAST(*$2, *$6, (decafStmtList*)$4, (decafStmtList*)$7); if(*$2=="main") { if(*$6!="IntType"){ throw runtime_error("main type should be int"); } TheMainFunction=$$; } else {$$->Codegen();} }
+method_decl: T_FUNC T_ID T_LPAREN {symtbl->push_back(*(new symbol_table));} idtypes_func_args T_RPAREN method_type method_block {$$= (decafAST*)new MethodDeclAST(*$2, *$7, (decafStmtList*)$5, (decafStmtList*)$8); if(*$2=="main") { if(*$7!="IntType"){ throw runtime_error("main type should be int"); } TheMainFunction=$$; } else {$$->Codegen();} }
 
 method_block: begin_block var_decls statements T_RCB {$$=new MethodBlockAST((decafStmtList*)$2,(decafStmtList*)$3); }
 

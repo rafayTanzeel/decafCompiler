@@ -284,7 +284,9 @@ public:
 		        		for (decafAST *types : paramList->getStmts()) {
 						args.push_back(gen_type(((TypedSymbol*)types)->getType()));
 						//args.push_back(types->Codegen()->getType());
-						argNames.push_back(((TypedSymbol*)types)->getName());
+						string argName=((TypedSymbol*)types)->getName();
+						if(symtbl->back()[argName]!=NULL) {}
+						argNames.push_back(argName);
 					}
 				}
 				
@@ -298,16 +300,18 @@ public:
 				llvm::BasicBlock *BB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entry", TheFunction);
 				Builder.SetInsertPoint(BB);
 
+				
 				map<string, llvm::AllocaInst *> bufferAlloc;
 				for (auto &Arg : TheFunction->args()){
 					Arg.setName(argNames.front());
 					llvm::AllocaInst *Alloca = Builder.CreateAlloca(Arg.getType(), nullptr, Arg.getName());
 					Builder.CreateStore(&Arg, Alloca);
-					access_symtbl(argNames.front())->setAddress(Alloca);
+					symtbl->back()[argNames.front()]->setAddress(Alloca);
 					argNames.pop_front();
 
 				}
-	
+				
+
 				symtbl->back()[name] = new descriptor(lineno,name,returnType);
 				symtbl->back()[name]->setAddress(TheFunction);
 
@@ -318,7 +322,11 @@ public:
 				}else{
 					throw runtime_error("empty method block");
 				}
-				symtbl->pop_back();
+				symtbl->pop_back(); symtbl->pop_back();
+
+				symtbl->back()[name] = new descriptor(lineno,name,returnType);
+				symtbl->back()[name]->setAddress(TheFunction);
+
 
 				verifyFunction(*TheFunction);
 				return TheFunction;
