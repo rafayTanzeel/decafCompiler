@@ -165,7 +165,7 @@ program: extern_list decafpackage
     }
 
 
-decafpackage: T_PACKAGE T_ID begin_block field_decls method_decls { TheMainFunction->Codegen();} end_block
+decafpackage: T_PACKAGE T_ID begin_block field_decls method_decls { if(TheMainFunction==NULL) {throw runtime_error("main function not found");} TheMainFunction->Codegen();} end_block
     { $$ = new PackageAST(*$2, (decafStmtList *)$4, (decafStmtList *)$5); delete $2; }
 //    | T_PACKAGE T_ID T_LCB ignore T_RCB
 //    { $$ = new PackageAST(*$2, new decafStmtList(), new decafStmtList()); delete $2; }
