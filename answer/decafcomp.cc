@@ -136,7 +136,7 @@ class ExternFuncAST : public decafAST {
 	string returnType;
 	decafStmtList* typelist;
 public:
-	ExternFuncAST(string name, string rType, decafStmtList* aType) :name(name), returnType(rType), typelist(aType){Codegen();}
+	ExternFuncAST(string name, string rType, decafStmtList* aType) :name(name), returnType(rType), typelist(aType){}
 
 	~ExternFuncAST() {
 		if (typelist != NULL) { delete typelist; }

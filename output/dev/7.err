@@ -4,11 +4,6 @@ llc: /usr/lib/llvm-3.8/bin/llc
 cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (1)
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-11)
 25: syntax error at char 1
-; ModuleID = 'Test'
-
-declare void @print_string(i8*)
-
-declare void @print_int(i32)
 codegen failed

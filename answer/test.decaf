@@ -1,12 +1,14 @@
 extern func print_int(int) void;
+extern func print_string(string) void;
 
-package Test {
-    func test(a int, b int) void {
-        print_int(a);
-        print_int(b);
+package foo {
+    func foo() bool {
+        print_string("foo");
+        return(false);
     }
     func main() int {
-        test(1, 2);
+        var flag bool;
+        flag = true || foo() && !true;
+        print_int(flag);
     }
 }
-

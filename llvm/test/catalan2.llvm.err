@@ -1,4 +1,1 @@
 3: syntax error at char 1
-; ModuleID = 'Test'
-
-declare void @print_int(i32)
