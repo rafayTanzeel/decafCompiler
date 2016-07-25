@@ -12,3 +12,4 @@ package foo {
         print_int(flag);
     }
 }
+
