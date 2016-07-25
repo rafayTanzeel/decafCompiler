@@ -22,6 +22,9 @@ public:
   virtual llvm::Value *Codegen() = 0;
 };
 
+decafAST* TheMainFunction = NULL;
+bool mainValidity=true;
+
 string getString(decafAST *d) {
 	if (d != NULL) {
 		return d->str();
@@ -100,13 +103,15 @@ public:
 	}
 	llvm::Value *Codegen() { 
 		llvm::Value *val = NULL;
+		symtbl->push_back(*(new symbol_table));
 		TheModule->setModuleIdentifier(llvm::StringRef(Name)); 
-		//if (NULL != FieldDeclList) {
-		//	val = FieldDeclList->Codegen();
-		//}
-		///if (NULL != MethodDeclList) {
-		//	val = MethodDeclList->Codegen();
-		//} 
+		if (NULL != FieldDeclList) {
+			val = FieldDeclList->Codegen();
+		}
+		if (NULL != MethodDeclList) {
+			val = MethodDeclList->Codegen();
+		}
+		symtbl->pop_back();
 		// Q: should we enter the class name into the symbol table?
 		return val; 
 	}
@@ -192,7 +197,7 @@ class FieldDeclAST : public decafAST {
 	int size;
 	int value;
 public:
-	FieldDeclAST(string declareType, string name, string type, string sizeType, int size, int value=0) : declareType(declareType), name(name), type(type), sizeType(sizeType), size(size), value(value) {symtbl->back()[name] = new descriptor(lineno,name,type); Codegen();}
+	FieldDeclAST(string declareType, string name, string type, string sizeType, int size, int value=0) : declareType(declareType), name(name), type(type), sizeType(sizeType), size(size), value(value) {}
 
 	string str() {
 		string collection = "";
@@ -205,6 +210,7 @@ public:
 		return collection.substr(0, collection.length() - 1);
 	}
 	llvm::Value *Codegen() {
+		symtbl->back()[name] = new descriptor(lineno,name,type);
 		llvm::GlobalVariable *gl;
 		if(declareType=="Scalar" || declareType=="AssignGlobalVar"){
 
@@ -239,17 +245,24 @@ class TypedSymbol : public decafAST {
 private:
 	string name;
 	string type;
+	bool varType;
 public:
-	TypedSymbol(string name, string type): name(name), type(type){symtbl->back()[name] = new descriptor(lineno,name,type);}
+	TypedSymbol(string name, string type, bool varType=true): name(name), type(type), varType(varType){}
 	string str() {
 		return string("VarDef") + "(" + name + "," + type + ")";
 	}
 	
 	llvm::Value *Codegen() {
+			llvm::AllocaInst *Alloca;
+			if(!varType){
+			symtbl->back()[name] = new descriptor(lineno,name,type);
+			}
+			else{
 			llvm::Value *temp=(gen_type(type)==Builder.getInt32Ty())?Builder.getInt32(0):Builder.getInt1(0);
-			llvm::AllocaInst *Alloca = Builder.CreateAlloca(temp->getType(), nullptr, name);
+			Alloca = Builder.CreateAlloca(temp->getType(), nullptr, name);
 
 			symtbl->back()[name]=new descriptor(lineno, Alloca);
+			}
 			return Alloca;
 		}
 	string getType(){return type;}
@@ -279,8 +292,10 @@ public:
 				llvm::Type *returnTy;
 				std::vector<llvm::Type *> args;
 				std::list<string> argNames;
+
+				symtbl->push_back(*(new symbol_table));
 				if(paramList!=NULL){
-					
+					paramList->Codegen();
 		        		for (decafAST *types : paramList->getStmts()) {
 						args.push_back(gen_type(((TypedSymbol*)types)->getType()));
 						//args.push_back(types->Codegen()->getType());
@@ -289,7 +304,7 @@ public:
 						argNames.push_back(argName);
 					}
 				}
-				
+			
 
 				returnTy=gen_type(returnType);
 				llvm::FunctionType *FT = llvm::FunctionType::get(returnTy, args, false);
@@ -301,7 +316,8 @@ public:
 				Builder.SetInsertPoint(BB);
 
 				
-				map<string, llvm::AllocaInst *> bufferAlloc;
+
+				
 				for (auto &Arg : TheFunction->args()){
 					Arg.setName(argNames.front());
 					llvm::AllocaInst *Alloca = Builder.CreateAlloca(Arg.getType(), nullptr, Arg.getName());
@@ -310,23 +326,27 @@ public:
 					argNames.pop_front();
 
 				}
-				
 
 				symtbl->back()[name] = new descriptor(lineno,name,returnType);
 				symtbl->back()[name]->setAddress(TheFunction);
 
 				symtbl->push_back(*(new symbol_table));
+
 				
+
 				if(methodBlock!=NULL){
 					methodBlock->Codegen();
 				}else{
 					throw runtime_error("empty method block");
 				}
+
+
 				symtbl->pop_back(); symtbl->pop_back();
 
 				symtbl->back()[name] = new descriptor(lineno,name,returnType);
 				symtbl->back()[name]->setAddress(TheFunction);
 
+				
 
 				verifyFunction(*TheFunction);
 				return TheFunction;

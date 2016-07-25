@@ -65,7 +65,7 @@ void idExist(string ident){
 
 #include "decafcomp.cc"
 
-decafAST* TheMainFunction = NULL;
+
 
 %}
 
@@ -127,7 +127,7 @@ decafAST* TheMainFunction = NULL;
 %token T_DOT
 %token <idval> T_ID
 
-%type <ast> extern_list extern_def extern_type comma_sep_extern_types extern_types_func decafpackage field_decls field_decl method_arg method_list_arg method_decls method_decl comma_sep_id_type comma_sep_method_arg idtypes_func_args var_decls var_decl block statements statement method_call method_block  assign break_statement continue_statement while_statement Lvalue for_statement init post return_statement if_statement
+%type <ast> extern_list extern_def extern_type comma_sep_extern_types extern_types_func decafpackage field_decls field_decl method_arg method_list_arg method_decls method_decl main_method_decl comma_sep_id_type comma_sep_method_arg idtypes_func_args var_decls var_decl block statements statement method_call method_block  assign break_statement continue_statement while_statement Lvalue for_statement init post return_statement if_statement
 %type <sval> extra_id_comma id_queried  method_type type
 %type <east> expr exprConstant check rtrop rtropin rvalue
 
@@ -165,7 +165,7 @@ program: extern_list decafpackage
     }
 
 
-decafpackage: T_PACKAGE T_ID begin_block field_decls method_decls { if(TheMainFunction==NULL) {throw runtime_error("main function not found");} TheMainFunction->Codegen();} end_block
+decafpackage: T_PACKAGE T_ID begin_block field_decls method_decls end_block
     { $$ = new PackageAST(*$2, (decafStmtList *)$4, (decafStmtList *)$5); delete $2; }
 //    | T_PACKAGE T_ID T_LCB ignore T_RCB
 //    { $$ = new PackageAST(*$2, new decafStmtList(), new decafStmtList()); delete $2; }
@@ -303,13 +303,13 @@ comma_sep_id_type: T_ID type T_COMMA comma_sep_id_type {
 
 	decafStmtList *slist = new decafStmtList();
 	
-	slist->push_back(new TypedSymbol(*$1, *$2));
+	slist->push_back(new TypedSymbol(*$1, *$2, false));
 	string str=((TypedSymbol*)$4)->str();
 	int pos= str.find(',');
 	string varName = str.substr(7, pos-7);
 	string varType = str.substr(pos+1, str.length()-pos-2);
 	
-	slist->push_back(new TypedSymbol(varName, varType)); 
+	slist->push_back(new TypedSymbol(varName, varType, false)); 
 
 	$$=slist; delete $1; delete $2;
 
@@ -320,7 +320,7 @@ comma_sep_id_type: T_ID type T_COMMA comma_sep_id_type {
 
 	decafStmtList *slist = new decafStmtList();
 
-	slist->push_back(new TypedSymbol(*$1, *$2)); 
+	slist->push_back(new TypedSymbol(*$1, *$2, false)); 
 
 	$$=slist; delete $1;  delete $2;
 
@@ -333,35 +333,31 @@ comma_sep_id_type: T_ID type T_COMMA comma_sep_id_type {
 
 
 //Method Declaration
-method_decls: {$$ = NULL;} | method_decl method_decls { decafStmtList *slist = new decafStmtList(); slist->push_back($1); if($2!=NULL) slist->push_back($2); $$ = slist; }
+method_decls: main_method_decl { if(TheMainFunction==NULL) throw runtime_error("main method not found"); if(mainValidity) ((decafStmtList*)$1)->push_back(TheMainFunction); mainValidity=false; $$=$1;}
 
-method_decl: T_FUNC T_ID T_LPAREN {symtbl->push_back(*(new symbol_table));} idtypes_func_args T_RPAREN method_type method_block {
+main_method_decl : {$$ = new decafStmtList();} | method_decl method_decls { decafStmtList *slist = new decafStmtList(); if($1!=NULL) slist->push_back($1); if($2!=NULL) slist->push_back($2); $$ = slist; }
 
+method_decl: T_FUNC T_ID T_LPAREN idtypes_func_args T_RPAREN method_type method_block {
 
+	if(*$2=="main") {
 
-	if(*$2=="main") { 
+		if(*$6!="IntType"){ throw runtime_error("main type should be int"); } 
 
+		TheMainFunction=(decafAST*)new MethodDeclAST(*$2, *$6, (decafStmtList*)$4, (decafStmtList*)$7);
 
-		if(*$7!="IntType"){ throw runtime_error("main type should be int"); } 
-
-
-		TheMainFunction=(decafAST*)new MethodDeclAST(*$2, *$7, (decafStmtList*)$5, (decafStmtList*)$8); 
-		
 		$$=NULL;
 
 	} 
 
 	else {
 
-		$$=(decafAST*)new MethodDeclAST(*$2, *$7, (decafStmtList*)$5, (decafStmtList*)$8);
-
-		$$->Codegen();
+		$$=(decafAST*)new MethodDeclAST(*$2, *$6, (decafStmtList*)$4, (decafStmtList*)$7);
 
 	} 
 
 }
 
-method_block: begin_block var_decls statements T_RCB {$$=new MethodBlockAST((decafStmtList*)$2,(decafStmtList*)$3); }
+method_block: T_LCB var_decls statements T_RCB {$$=new MethodBlockAST((decafStmtList*)$2,(decafStmtList*)$3); }
 
 
 

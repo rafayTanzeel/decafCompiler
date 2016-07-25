@@ -1,12 +1,12 @@
 extern func print_int(int) void;
+
 package Test {
-    func main() int
-    {
-        var x int;
-        print_int(true && true);
-        print_int(true && false);
-        print_int(false && true);
-        print_int(false && false);
+    func test(a int, b int) void {
+        print_int(a);
+        print_int(b);
+    }
+    func main() int {
+        test(1, 2);
     }
 }
 
