@@ -15,12 +15,24 @@ entry:
 define i32 @main() {
 entry:
   %flag = alloca i1
-  %calltmp = call i1 @foo()
-  %andtmp = and i1 %calltmp, false
-  %ortmp = or i1 true, %andtmp
-  store i1 %ortmp, i1* %flag
-  %flag1 = load i1, i1* %flag
-  %zexttmp = zext i1 %flag1 to i32
+  br i1 true, label %end, label %ifright
+
+end:                                              ; preds = %ifright, %entry
+  %phival3 = phi i1 [ true, %entry ], [ %phival, %ifright ]
+  store i1 %phival3, i1* %flag
+  %flag4 = load i1, i1* %flag
+  %zexttmp = zext i1 %flag4 to i32
   call void @print_int(i32 %zexttmp)
   ret i32 0
+
+ifright:                                          ; preds = %entry
+  %calltmp = call i1 @foo()
+  br i1 %calltmp, label %ifright2, label %end1
+  br label %end
+
+end1:                                             ; preds = %ifright2, %ifright
+  %phival = phi i1 [ %calltmp, %ifright ], [ false, %ifright2 ]
+
+ifright2:                                         ; preds = %ifright
+  br label %end1
 }

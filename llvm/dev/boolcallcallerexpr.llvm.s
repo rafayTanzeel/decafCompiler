@@ -24,7 +24,7 @@ test:                                   # @test
 	.type	main,@function
 main:                                   # @main
 	.cfi_startproc
-# BB#0:                                 # %entry
+# BB#0:                                 # %end
 	pushq	%rax
 .Ltmp1:
 	.cfi_def_cfa_offset 16

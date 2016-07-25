@@ -11,8 +11,15 @@ test:                                   # @test
 	.cfi_def_cfa_offset 16
 	andl	$1, %edi
 	movb	%dil, 7(%rsp)
-	movzbl	7(%rsp), %edi
-	andl	$1, %edi
+	movb	7(%rsp), %al
+	andb	$1, %al
+	movzbl	%al, %ecx
+	cmpl	$1, %ecx
+	je	.LBB0_2
+# BB#1:                                 # %ifright
+	xorl	%eax, %eax
+.LBB0_2:                                # %end
+	movzbl	%al, %edi
 	callq	print_int
 	popq	%rax
 	retq

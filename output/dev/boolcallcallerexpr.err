@@ -19,8 +19,15 @@ entry:
 
 define i32 @main() {
 entry:
-  call void @test(i1 true)
+  br i1 true, label %ifright, label %end
+
+end:                                              ; preds = %ifright, %entry
+  %phival = phi i1 [ true, %entry ], [ true, %ifright ]
+  call void @test(i1 %phival)
   ret i32 0
+
+ifright:                                          ; preds = %entry
+  br label %end
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/boolcallcallerexpr.llvm" -o "llvm/dev/boolcallcallerexpr.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/boolcallcallerexpr.llvm.bc" -o "llvm/dev/boolcallcallerexpr.llvm.s" ... ok

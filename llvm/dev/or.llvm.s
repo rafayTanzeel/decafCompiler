@@ -5,7 +5,7 @@
 	.type	main,@function
 main:                                   # @main
 	.cfi_startproc
-# BB#0:                                 # %entry
+# BB#0:                                 # %end9
 	pushq	%rax
 .Ltmp0:
 	.cfi_def_cfa_offset 16

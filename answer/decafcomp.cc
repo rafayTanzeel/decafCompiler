@@ -535,44 +535,42 @@ public:
 
 				
 				llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
-
-				llvm::BasicBlock *IfLeftBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifleft", TheFunction);
-				
 				llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
+				llvm::BasicBlock *IfRightBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifright", TheFunction);
 
 
-				Builder.SetInsertPoint(IfLeftBB);
 				llvm::Value *L = left_value->Codegen();
 
 
-				llvm::BasicBlock *IfRightBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifright", TheFunction);
-				
+
+				//Builder.CreateBr(IfRightBB);
 
 				Builder.SetInsertPoint(IfRightBB);
 				llvm::Value *R = right_value->Codegen();
-				
+
 
 				Builder.SetInsertPoint(CurBB);
 
 				if(converter[op]==14){
-					Builder.CreateCondBr(Builder.CreateICmpEQ(L, Builder.getInt1(0), "ifcondVal"), IfLeftBB, IfRightBB);}
+					Builder.CreateCondBr(L, IfRightBB, MergeBB);}
 				else{
-					Builder.CreateCondBr(Builder.CreateICmpEQ(L, Builder.getInt1(1), "ifcondVal"), IfLeftBB, IfRightBB);}
+					Builder.CreateCondBr(L, MergeBB, IfRightBB);}
 
 
-				Builder.SetInsertPoint(IfLeftBB);
-				Builder.CreateBr(MergeBB);
-				IfLeftBB=Builder.GetInsertBlock();
+
+
+				
+
 
 				Builder.SetInsertPoint(IfRightBB);
 				Builder.CreateBr(MergeBB);
-				IfRightBB=Builder.GetInsertBlock();
+				//IfRightBB=Builder.GetInsertBlock();
 
 
 				Builder.SetInsertPoint(MergeBB);
 
 				llvm::PHINode *val = Builder.CreatePHI(L->getType(), 2, "phival");
-				val->addIncoming(L, IfLeftBB);
+				val->addIncoming(L, CurBB);
 				val->addIncoming(R, IfRightBB);
 
 				//Builder.SetInsertPoint(CurBB);

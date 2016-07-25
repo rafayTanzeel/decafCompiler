@@ -18,13 +18,13 @@ ifstart:                                          ; preds = %entry
   %ICmpEQtmp = icmp eq i32 %b3, 0
   br i1 %ICmpEQtmp, label %iftrue, label %iffalse
 
-end:                                              ; preds = %iffalse, %iftrue
-  ret i32 0
-
 iftrue:                                           ; preds = %ifstart
   %a4 = load i32, i32* %a1
   ret i32 %a4
   br label %end
+
+end:                                              ; preds = %iffalse, %iftrue
+  ret i32 0
 
 iffalse:                                          ; preds = %ifstart
   %b5 = load i32, i32* %b2

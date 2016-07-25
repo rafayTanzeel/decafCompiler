@@ -13,6 +13,11 @@ main:                                   # @main
 	movb	$1, 6(%rsp)
 	movb	7(%rsp), %al
 	andb	$1, %al
+	je	.LBB0_2
+# BB#1:                                 # %ifright
+	movb	6(%rsp), %al
+.LBB0_2:                                # %end
+	andb	$1, %al
 	movb	%al, 5(%rsp)
 	movzbl	5(%rsp), %edi
 	andl	$1, %edi

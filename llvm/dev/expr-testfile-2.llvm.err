@@ -14,14 +14,26 @@ entry:
   store i32 %negtmp, i32* %x
   store i1 true, i1* %y
   store i1 false, i1* %z
-  %y3 = load i1, i1* %y
-  %andtmp = and i1 true, %y3
-  %z4 = load i1, i1* %z
-  %ortmp = or i1 %andtmp, %z4
-  store i1 %ortmp, i1* %y
-  %x5 = load i32, i32* %x
-  %x6 = load i32, i32* %x
-  %negtmp7 = sub i32 0, %x6
-  call void @print_int(i32 %negtmp7)
+  br i1 true, label %ifright4, label %end3
+  br i1 %phival, label %end, label %ifright
+
+end:                                              ; preds = %ifright, %entry
+  %phival7 = phi i1 [ %phival, %entry ], [ %z6, %ifright ]
+  store i1 %phival7, i1* %y
+  %x8 = load i32, i32* %x
+  %x9 = load i32, i32* %x
+  %negtmp10 = sub i32 0, %x9
+  call void @print_int(i32 %negtmp10)
   ret i32 0
+
+ifright:                                          ; preds = %entry
+  %z6 = load i1, i1* %z
+  br label %end
+
+end3:                                             ; preds = %ifright4, %entry
+  %phival = phi i1 [ true, %entry ], [ %y5, %ifright4 ]
+
+ifright4:                                         ; preds = %entry
+  %y5 = load i1, i1* %y
+  br label %end3
 }

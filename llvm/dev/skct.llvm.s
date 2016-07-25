@@ -28,6 +28,7 @@ main:                                   # @main
 .Ltmp1:
 	.cfi_def_cfa_offset 16
 	callq	foo
+	testb	$1, %al
 	movb	$1, 7(%rsp)
 	movzbl	7(%rsp), %edi
 	andl	$1, %edi

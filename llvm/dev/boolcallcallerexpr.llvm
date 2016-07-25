@@ -12,6 +12,13 @@ entry:
 
 define i32 @main() {
 entry:
-  call void @test(i1 true)
+  br i1 true, label %ifright, label %end
+
+end:                                              ; preds = %ifright, %entry
+  %phival = phi i1 [ true, %entry ], [ true, %ifright ]
+  call void @test(i1 %phival)
   ret i32 0
+
+ifright:                                          ; preds = %entry
+  br label %end
 }

@@ -1,0 +1,3 @@
+/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/expr-testfile-2.llvm:36:1: error: expected instruction opcode
+ifright4:                                         ; preds = %entry
+^

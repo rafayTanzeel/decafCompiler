@@ -12,11 +12,43 @@ declare void @print_int(i32)
 define i32 @main() {
 entry:
   %x = alloca i32
-  call void @print_int(i32 1)
-  call void @print_int(i32 0)
-  call void @print_int(i32 0)
-  call void @print_int(i32 0)
+  br i1 true, label %ifright, label %end
+
+end:                                              ; preds = %ifright, %entry
+  %phival = phi i1 [ true, %entry ], [ true, %ifright ]
+  %zexttmp = zext i1 %phival to i32
+  call void @print_int(i32 %zexttmp)
+  br i1 true, label %ifright2, label %end1
+
+ifright:                                          ; preds = %entry
+  br label %end
+
+end1:                                             ; preds = %ifright2, %end
+  %phival3 = phi i1 [ true, %end ], [ false, %ifright2 ]
+  %zexttmp4 = zext i1 %phival3 to i32
+  call void @print_int(i32 %zexttmp4)
+  br i1 false, label %ifright6, label %end5
+
+ifright2:                                         ; preds = %end
+  br label %end1
+
+end5:                                             ; preds = %ifright6, %end1
+  %phival7 = phi i1 [ false, %end1 ], [ true, %ifright6 ]
+  %zexttmp8 = zext i1 %phival7 to i32
+  call void @print_int(i32 %zexttmp8)
+  br i1 false, label %ifright10, label %end9
+
+ifright6:                                         ; preds = %end1
+  br label %end5
+
+end9:                                             ; preds = %ifright10, %end5
+  %phival11 = phi i1 [ false, %end5 ], [ false, %ifright10 ]
+  %zexttmp12 = zext i1 %phival11 to i32
+  call void @print_int(i32 %zexttmp12)
   ret i32 0
+
+ifright10:                                        ; preds = %end5
+  br label %end9
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/and.llvm" -o "llvm/dev/and.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/and.llvm.bc" -o "llvm/dev/and.llvm.s" ... ok
