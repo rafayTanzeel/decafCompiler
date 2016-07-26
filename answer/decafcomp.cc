@@ -531,39 +531,29 @@ public:
 		if (op=="MethodCall") return methodReturn->Codegen();
 		if(left_value == NULL || right_value == NULL) return valueStorage;
 
-		if(converter[op]==14 || converter[op]==15){
+		if(converter[op]==15){
 
 				
 				llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
+				
+				llvm::Value *L = left_value->Codegen();
+
 				llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
 				llvm::BasicBlock *IfRightBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifright", TheFunction);
 
 
-				llvm::Value *L = left_value->Codegen();
+				//if(converter[op]==14){
+					//Builder.CreateCondBr(L, IfRightBB, MergeBB);}
+				//else{
+					Builder.CreateCondBr(L, MergeBB, IfRightBB);//}
 
-
-
-				//Builder.CreateBr(IfRightBB);
 
 				Builder.SetInsertPoint(IfRightBB);
 				llvm::Value *R = right_value->Codegen();
-
-
-				Builder.SetInsertPoint(CurBB);
-
-				if(converter[op]==14){
-					Builder.CreateCondBr(L, IfRightBB, MergeBB);}
-				else{
-					Builder.CreateCondBr(L, MergeBB, IfRightBB);}
-
-
-
+				Builder.CreateBr(MergeBB);
 
 				
-
-
-				Builder.SetInsertPoint(IfRightBB);
-				Builder.CreateBr(MergeBB);
+				
 				//IfRightBB=Builder.GetInsertBlock();
 
 
@@ -598,6 +588,8 @@ public:
 			 case 11: return Builder.CreateICmpSLE(L, R, "ICmpSLEtmp"); break;
 			 case 12: return Builder.CreateICmpSGT(L, R, "ICmpSGTtmp"); break;
 			 case 13: return Builder.CreateICmpSGE(L, R, "ICmpSGEtmp"); break;
+			 case 14: return Builder.CreateAnd(L, R, "andtmp"); break;
+			 case 15: return Builder.CreateOr(L, R, "ortmp"); break;
 			 case 16: return Builder.CreateNeg(R, "negtmp"); break;
 			 case 17: return Builder.CreateNot(R, "nottmp"); break;
 			default: throw runtime_error("expression is wrong"); break;

@@ -8,7 +8,7 @@ package foo {
     }
     func main() int {
         var flag bool;
-        flag = true || foo() && !true;
+        flag = true || foo() || !true;
         print_int(flag);
     }
 }
