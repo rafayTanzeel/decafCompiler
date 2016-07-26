@@ -542,19 +542,19 @@ public:
 				llvm::BasicBlock *IfRightBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifright", TheFunction);
 
 
-				if(converter[op]==15)
-					Builder.CreateCondBr(L, MergeBB, IfRightBB);
-				else
-					Builder.CreateCondBr(L, IfRightBB, MergeBB);
+				if(converter[op]==15){//or
+					Builder.CreateCondBr(L, MergeBB, IfRightBB);}
+				else{//and
+					Builder.CreateCondBr(L, IfRightBB, MergeBB);}
 
 
 				Builder.SetInsertPoint(IfRightBB);
 				llvm::Value *R = right_value->Codegen();
 				Builder.CreateBr(MergeBB);
-
+				IfRightBB=Builder.GetInsertBlock();
 
 				Builder.SetInsertPoint(MergeBB);
-
+				
 				llvm::PHINode *val = Builder.CreatePHI(L->getType(), 2, "phival");
 				val->addIncoming(L, CurBB);
 				val->addIncoming(R, IfRightBB);
