@@ -754,18 +754,14 @@ public:
 
 				val=condition->Codegen();
 
+				Builder.CreateCondBr(val, IfTrueBB, EndBB);
+
 				Builder.SetInsertPoint(IfTrueBB);
 				while_block->Codegen(); //Execute block
 				Builder.CreateBr(IfStartBB);
 				IfTrueBB=Builder.GetInsertBlock();
 
-				llvm::BasicBlock *IfFalseBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iffalse", TheFunction);
-				Builder.SetInsertPoint(IfFalseBB);
-				Builder.CreateBr(EndBB);
-				IfFalseBB=Builder.GetInsertBlock();
 
-				Builder.SetInsertPoint(IfStartBB);
-				Builder.CreateCondBr(val, IfTrueBB, IfFalseBB);
 				Builder.SetInsertPoint(EndBB);
 
 				return val;
@@ -801,20 +797,14 @@ public:
 				val=condition->Codegen();
 				if(val==NULL) throw runtime_error("condition not specified for for loop"); 
 
+				Builder.CreateCondBr(val, IfTrueBB, EndBB);
+
 				Builder.SetInsertPoint(IfTrueBB);
 				block->Codegen(); //Execute block
 				loop_assign_list->Codegen();  //Execute incrementing
 				Builder.CreateBr(IfStartBB);
 				IfTrueBB=Builder.GetInsertBlock();
 
-
-				llvm::BasicBlock *IfFalseBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iffalse", TheFunction);
-				Builder.SetInsertPoint(IfFalseBB);
-				Builder.CreateBr(EndBB);
-				IfFalseBB=Builder.GetInsertBlock();
-
-				Builder.SetInsertPoint(IfStartBB);
-				Builder.CreateCondBr(val, IfTrueBB, IfFalseBB);
 				Builder.SetInsertPoint(EndBB);
 
 
