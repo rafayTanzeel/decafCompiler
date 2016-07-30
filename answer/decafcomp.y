@@ -167,18 +167,7 @@ program: extern_list decafpackage
 
 decafpackage: T_PACKAGE T_ID begin_block field_decls method_decls end_block
     { $$ = new PackageAST(*$2, (decafStmtList *)$4, (decafStmtList *)$5); delete $2; }
-//    | T_PACKAGE T_ID T_LCB ignore T_RCB
-//    { $$ = new PackageAST(*$2, new decafStmtList(), new decafStmtList()); delete $2; }
-    ;
-
-//Don't need for now so keep it as archieve
-//ignore: ignore T_ID
-//    | ignore T_LCB
-//    | ignore T_RCB
-//	| T_ID
-//	| T_LCB
-//	| T_RCB
-//	;
+   // | error {throw runtime_error("no package definition in decaf program");}
 
 extern_list: extern_def extern_list { 
 		decafStmtList *slist = new decafStmtList(); slist->push_back($1); if($2!=NULL) slist->push_back($2); $$ = slist;} 
@@ -423,8 +412,8 @@ if_statement: T_IF T_LPAREN expr T_RPAREN block %prec "if_then" {$$=new ifStatme
 	    | T_IF T_LPAREN expr T_RPAREN block T_ELSE block {$$=new ifStatmentAST((ExpressionAST*)$3, (BlockAST*)$5, (BlockAST*)$7);}
 
 
-
-for_statement: T_FOR T_LPAREN init T_SEMICOLON check T_SEMICOLON post T_RPAREN block {$$=new forStatmentAST($5->str(),(decafStmtList*)$3,(decafStmtList*)$7, (decafStmtList*)$9);  delete $5;}
+//Forloop Statements
+for_statement: T_FOR T_LPAREN init T_SEMICOLON check T_SEMICOLON post T_RPAREN block {$$=new forStatmentAST($5,(decafStmtList*)$3,(decafStmtList*)$7, (decafStmtList*)$9);}
 init: init T_COMMA assign {decafStmtList *slist = new decafStmtList(); slist->push_back($3); slist->push_back($1); $$=slist;}
     | assign
 check: expr
@@ -432,8 +421,8 @@ post: post T_COMMA assign {decafStmtList *slist = new decafStmtList(); slist->pu
     | assign
 
 
-
-while_statement: T_WHILE T_LPAREN expr T_RPAREN block {$$=new whileStatementAST($3->str(), (decafStmtList*)$5);}
+//Whileloop Statements
+while_statement: T_WHILE T_LPAREN expr T_RPAREN block {$$=new whileStatementAST($3, (decafStmtList*)$5);}
 
 break_statement: T_BREAK {$$=new BreakStatementAST();}
 
