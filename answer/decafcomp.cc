@@ -13,6 +13,7 @@ extern symbol_table_list* symtbl;
 using namespace std;
 
 
+bool breaker;
 
 /// decafAST - Base class for all abstract syntax tree nodes.
 class decafAST {
@@ -711,6 +712,10 @@ public:
 	string str() { return "BreakStmt"; }
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
+				breaker=true;
+				llvm::BasicBlock *DispBB = (llvm::BasicBlock*)access_symtbl("break")->getAddress();
+				Builder.SetInsertPoint(DispBB);
+				
 				return val;
 		}
 };
@@ -720,6 +725,7 @@ public:
 	string str() { return "ContinueStmt"; }
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
+
 				return val;
 		}
 };
@@ -747,20 +753,39 @@ public:
 				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
 				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", TheFunction);
 				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
+				llvm::BasicBlock *DispBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "dispose", TheFunction);
 
 				Builder.CreateBr(IfStartBB);
 				Builder.SetInsertPoint(IfStartBB);
 
 
 				val=condition->Codegen();
+				
 
 				Builder.CreateCondBr(val, IfTrueBB, EndBB);
 
 				Builder.SetInsertPoint(IfTrueBB);
-				while_block->Codegen(); //Execute block
-				Builder.CreateBr(IfStartBB);
-				IfTrueBB=Builder.GetInsertBlock();
+				
 
+				
+				symtbl->back()["break"]=new descriptor(lineno, DispBB);
+
+				while_block->Codegen(); //Execute block
+
+				Builder.SetInsertPoint(DispBB);
+				Builder.CreateBr(IfStartBB);
+				DispBB=Builder.GetInsertBlock();
+
+				if(breaker){
+					val=Builder.getInt1(1);}
+				else{
+					val=Builder.getInt1(0);}
+
+				breaker=false;
+
+				Builder.SetInsertPoint(IfTrueBB);
+				Builder.CreateCondBr(val, EndBB, DispBB);
+				IfTrueBB=Builder.GetInsertBlock();
 
 				Builder.SetInsertPoint(EndBB);
 
