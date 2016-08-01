@@ -1,14 +1,25 @@
 extern func print_int(int) void;
-extern func print_string(string) void;
 
 package foo {
-    func foo() bool {
-        print_string("foo");
-        return(false);
-    }
-    func main() int {
-        var flag bool;
-        flag = true || foo() || !true;
-        print_int(flag);
-    }
+	func main() int {
+		var i int;
+		i = 0;
+		while(i<10){
+			i=i+1;
+			if(i==8){
+				continue;
+			}
+			print_int(i);
+
+		}
+
+		
+	}
 }
+
+
+
+
+
+
+

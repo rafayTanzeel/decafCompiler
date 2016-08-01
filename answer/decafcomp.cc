@@ -711,6 +711,8 @@ public:
 	string str() { return "BreakStmt"; }
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
+				llvm::BasicBlock *EndBB = (llvm::BasicBlock*)access_symtbl("breakE")->getAddress();
+				Builder.CreateBr(EndBB);
 				return val;
 		}
 };
@@ -720,6 +722,8 @@ public:
 	string str() { return "ContinueStmt"; }
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
+				llvm::BasicBlock *IfStartBB = (llvm::BasicBlock*)access_symtbl("breakS")->getAddress();
+				Builder.CreateBr(IfStartBB);
 				return val;
 		}
 };
@@ -728,39 +732,90 @@ public:
 
 
 class whileStatementAST : public decafAST {
-	string condition;
+	ExpressionAST* condition;
 	decafStmtList* while_block;
 
 public:
-	whileStatementAST(string condition, decafStmtList* while_block):condition(condition), while_block(while_block){}
+	whileStatementAST(ExpressionAST* condition, decafStmtList* while_block):condition(condition), while_block(while_block){}
 
 	~whileStatementAST() {
 		if (while_block != NULL) delete while_block;
 	}
 
 	string str() { 
-		return string("WhileStmt") + "(" + condition + ',' + getString(while_block) + ")";
+		return string("WhileStmt") + "(" + condition->str() + ',' + getString(while_block) + ")";
 	}
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
+
+				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
+				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", TheFunction);
+				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
+
+				symtbl->back()["breakS"]=new descriptor(lineno, IfStartBB);
+				symtbl->back()["breakE"]=new descriptor(lineno, EndBB);
+
+				Builder.CreateBr(IfStartBB);
+				Builder.SetInsertPoint(IfStartBB);
+
+
+				val=condition->Codegen();
+
+				Builder.CreateCondBr(val, IfTrueBB, EndBB);
+
+				Builder.SetInsertPoint(IfTrueBB);
+				
+				while_block->Codegen(); //Execute block
+				Builder.CreateBr(IfStartBB);
+				IfTrueBB=Builder.GetInsertBlock();
+
+
+				Builder.SetInsertPoint(EndBB);
+
 				return val;
 		}
 };
 
 
 class forStatmentAST : public decafAST {
-	string expr;
+	ExpressionAST* condition;
 	decafStmtList* pre_assign_list;
 	decafStmtList* loop_assign_list;
 	decafStmtList* block;
 public:
-	forStatmentAST(string expr, decafStmtList* pre_assign_list, decafStmtList* loop_assign_list, decafStmtList* block) : expr(expr), pre_assign_list(pre_assign_list), loop_assign_list(loop_assign_list), block(block) {}
+	forStatmentAST(ExpressionAST* expr, decafStmtList* pre_assign_list, decafStmtList* loop_assign_list, decafStmtList* block) : condition(expr), pre_assign_list(pre_assign_list), loop_assign_list(loop_assign_list), block(block) {}
 	
 	string str() {
-		return string("ForStmt") + "(" + getString(pre_assign_list) + ',' + expr + ',' + getString(loop_assign_list) + ',' + getString(block)+")";
+		return string("ForStmt") + "(" + getString(pre_assign_list) + ',' + condition->str() + ',' + getString(loop_assign_list) + ',' + getString(block)+")";
 	}
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
+
+				
+				pre_assign_list->Codegen(); //Execute initialization
+
+
+				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
+				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", TheFunction);
+				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
+
+				Builder.CreateBr(IfStartBB);
+				Builder.SetInsertPoint(IfStartBB);
+
+				val=condition->Codegen();
+				if(val==NULL) throw runtime_error("condition not specified for for loop"); 
+
+				Builder.CreateCondBr(val, IfTrueBB, EndBB);
+
+				Builder.SetInsertPoint(IfTrueBB);
+				block->Codegen(); //Execute block
+				loop_assign_list->Codegen();  //Execute incrementing
+				Builder.CreateBr(IfStartBB);
+				IfTrueBB=Builder.GetInsertBlock();
+
+				Builder.SetInsertPoint(EndBB);
+
+
 				return val;
 		}
 };
@@ -810,12 +865,10 @@ public:
 
 						Builder.SetInsertPoint(IfStartBB);
 						Builder.CreateCondBr(val, IfTrueBB, IfFalseBB);
-						Builder.SetInsertPoint(EndBB);
 						
 
 				} else{//True
-
-					Builder.CreateBr(IfTrueBB);
+					Builder.CreateCondBr(val, IfTrueBB, EndBB);
 					Builder.SetInsertPoint(IfTrueBB);
 					if_block->Codegen();
 					Builder.CreateBr(EndBB);
