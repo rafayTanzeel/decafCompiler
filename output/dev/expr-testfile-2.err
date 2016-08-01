@@ -21,11 +21,18 @@ entry:
   store i32 %negtmp, i32* %x
   store i1 true, i1* %y
   store i1 false, i1* %z
-  br i1 true, label %ifright4, label %end3
-  br i1 %phival, label %end, label %ifright
+  br i1 true, label %ifright, label %end
 
 end:                                              ; preds = %ifright, %entry
-  %phival7 = phi i1 [ %phival, %entry ], [ %z6, %ifright ]
+  %phival = phi i1 [ true, %entry ], [ %y3, %ifright ]
+  br i1 %phival, label %end4, label %ifright5
+
+ifright:                                          ; preds = %entry
+  %y3 = load i1, i1* %y
+  br label %end
+
+end4:                                             ; preds = %ifright5, %end
+  %phival7 = phi i1 [ %phival, %entry ], [ %z6, %ifright5 ]
   store i1 %phival7, i1* %y
   %x8 = load i32, i32* %x
   %x9 = load i32, i32* %x
@@ -33,21 +40,19 @@ end:                                              ; preds = %ifright, %entry
   call void @print_int(i32 %negtmp10)
   ret i32 0
 
-ifright:                                          ; preds = %entry
+ifright5:                                         ; preds = %end
   %z6 = load i1, i1* %z
-  br label %end
-
-end3:                                             ; preds = %ifright4, %entry
-  %phival = phi i1 [ true, %entry ], [ %y5, %ifright4 ]
-
-ifright4:                                         ; preds = %entry
-  %y5 = load i1, i1* %y
-  br label %end3
+  br label %end4
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/expr-testfile-2.llvm" -o "llvm/dev/expr-testfile-2.llvm.bc" ... failed (1)
-/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/expr-testfile-2.llvm:36:1: error: expected instruction opcode
-ifright4:                                         ; preds = %entry
-^
+/usr/lib/llvm-3.8/bin/llvm-as: assembly parsed, but does not verify as correct!
+PHI node entries do not match predecessors!
+  %phival7 = phi i1 [ %phival, %entry ], [ %z6, %ifright5 ]
+label %entry
+label %end
+Instruction does not dominate all uses!
+  %phival = phi i1 [ true, %entry ], [ %y3, %ifright ]
+  %phival7 = phi i1 [ %phival, %entry ], [ %z6, %ifright5 ]
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/expr-testfile-2.llvm.bc" -o "llvm/dev/expr-testfile-2.llvm.s" ... ok
 linking:gcc -o "llvm/dev/expr-testfile-2.llvm.exec" "llvm/dev/expr-testfile-2.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
 running:llvm/dev/expr-testfile-2.llvm.exec ... ok

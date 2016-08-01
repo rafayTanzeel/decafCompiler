@@ -15,8 +15,8 @@ entry:
   %a1 = load i1, i1* %a
   br i1 %a1, label %end, label %ifright
 
-end:                                              ; preds = %ifright, %entry
-  %phival7 = phi i1 [ %a1, %entry ], [ %phival, %ifright ]
+end:                                              ; preds = %end3, %entry
+  %phival7 = phi i1 [ %a1, %entry ], [ %phival, %end3 ]
   store i1 %phival7, i1* %flag
   store i32 0, i32* %size
   %size8 = load i32, i32* %size
@@ -24,16 +24,16 @@ end:                                              ; preds = %ifright, %entry
   ret i32 0
 
 ifright:                                          ; preds = %entry
-  %b4 = load i1, i1* %b
-  br i1 %b4, label %ifright3, label %end2
+  %b2 = load i1, i1* %b
+  br i1 %b2, label %ifright4, label %end3
+
+end3:                                             ; preds = %ifright4, %ifright
+  %phival = phi i1 [ %b2, %ifright ], [ %nottmp, %ifright4 ]
   br label %end
 
-end2:                                             ; preds = %ifright3, %ifright
-  %phival = phi i1 [ %b4, %ifright ], [ %nottmp, %ifright3 ]
-
-ifright3:                                         ; preds = %ifright
+ifright4:                                         ; preds = %ifright
   %c5 = load i1, i1* %c
   %c6 = load i1, i1* %c
   %nottmp = xor i1 %c6, true
-  br label %end2
+  br label %end3
 }

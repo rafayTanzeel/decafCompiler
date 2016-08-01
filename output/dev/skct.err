@@ -24,8 +24,8 @@ entry:
   %flag = alloca i1
   br i1 true, label %end, label %ifright
 
-end:                                              ; preds = %ifright, %entry
-  %phival3 = phi i1 [ true, %entry ], [ %phival, %ifright ]
+end:                                              ; preds = %end1, %entry
+  %phival3 = phi i1 [ true, %entry ], [ %phival, %end1 ]
   store i1 %phival3, i1* %flag
   %flag4 = load i1, i1* %flag
   %zexttmp = zext i1 %flag4 to i32
@@ -35,18 +35,15 @@ end:                                              ; preds = %ifright, %entry
 ifright:                                          ; preds = %entry
   %calltmp = call i1 @foo()
   br i1 %calltmp, label %ifright2, label %end1
-  br label %end
 
 end1:                                             ; preds = %ifright2, %ifright
   %phival = phi i1 [ %calltmp, %ifright ], [ false, %ifright2 ]
+  br label %end
 
 ifright2:                                         ; preds = %ifright
   br label %end1
 }
-assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/skct.llvm" -o "llvm/dev/skct.llvm.bc" ... failed (1)
-/usr/lib/llvm-3.8/bin/llvm-as: llvm/dev/skct.llvm:36:1: error: expected instruction opcode
-ifright2:                                         ; preds = %ifright
-^
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/skct.llvm" -o "llvm/dev/skct.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/skct.llvm.bc" -o "llvm/dev/skct.llvm.s" ... ok
 linking:gcc -o "llvm/dev/skct.llvm.exec" "llvm/dev/skct.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... ok
 running:llvm/dev/skct.llvm.exec ... ok

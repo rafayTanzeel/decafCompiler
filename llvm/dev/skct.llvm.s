@@ -23,12 +23,10 @@ foo:                                    # @foo
 	.type	main,@function
 main:                                   # @main
 	.cfi_startproc
-# BB#0:                                 # %entry
+# BB#0:                                 # %end
 	pushq	%rax
 .Ltmp1:
 	.cfi_def_cfa_offset 16
-	callq	foo
-	testb	$1, %al
 	movb	$1, 7(%rsp)
 	movzbl	7(%rsp), %edi
 	andl	$1, %edi
