@@ -4,5 +4,83 @@ llc: /usr/lib/llvm-3.8/bin/llc
 cc: gcc
 codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
 stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (1)
-codegen failed
+generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
+; ModuleID = 'GreatestCommonDivisor'
+
+@a = internal global i32 10
+@b = internal global i32 20
+
+declare void @print_int(i32)
+
+define i32 @main() {
+entry:
+  %z = alloca i32
+  %a = load i32, i32* @a
+  %b = load i32, i32* @b
+  %calltmp = call i32 @gcd(i32 %a, i32 %b)
+  call void @print_int(i32 %calltmp)
+  ret i32 0
+}
+
+define i1 @iszero(i32 %a, i32 %b) {
+entry:
+  %a1 = alloca i32
+  store i32 %a, i32* %a1
+  %b2 = alloca i32
+  store i32 %b, i32* %b2
+  br label %ifstart
+}
+
+define i32 @gcd(i32 %a, i32 %b) {
+entry:
+  %a1 = alloca i32
+  store i32 %a, i32* %a1
+  %b2 = alloca i32
+  store i32 %b, i32* %b2
+  %a8 = load i32, i32* %a1
+  %b9 = load i32, i32* %b2
+  %calltmp10 = call i1 @iszero(i32 %a8, i32 %b9)
+  ret i1 %calltmp10
+
+ifstart:                                          ; preds = %entry
+  %b3 = load i32, i32* %b2
+  %ICmpEQtmp = icmp eq i32 %b3, 0
+  br i1 %ICmpEQtmp, label %iftrue, label %iffalse
+
+iftrue:                                           ; preds = %ifstart
+  %a4 = load i32, i32* %a1
+  ret i32 %a4
+  br label %end
+
+end:                                              ; preds = %iffalse, %iftrue
+  ret i32 0
+
+iffalse:                                          ; preds = %ifstart
+  %b5 = load i32, i32* %b2
+  %b6 = load i32, i32* %b2
+  %a7 = load i32, i32* %a1
+  %sremtmp = srem i32 %a7, %b6
+  %calltmp = call i32 @gcd(i32 %b5, i32 %sremtmp)
+  ret i32 %calltmp
+  br label %end
+}
+assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/test/gcd2.llvm" -o "llvm/test/gcd2.llvm.bc" ... failed (1)
+/usr/lib/llvm-3.8/bin/llvm-as: llvm/test/gcd2.llvm:24:12: error: use of undefined value '%ifstart'
+  br label %ifstart
+           ^
+converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/test/gcd2.llvm.bc" -o "llvm/test/gcd2.llvm.s" ... failed (1)
+/usr/lib/llvm-3.8/bin/llc: llvm/test/gcd2.llvm.bc: error: Could not open input file: No such file or directory
+linking:gcc -o "llvm/test/gcd2.llvm.exec" "llvm/test/gcd2.llvm.s" "/home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c" ... failed (1)
+gcc: error: llvm/test/gcd2.llvm.s: No such file or directory
+running:llvm/test/gcd2.llvm.exec ...Traceback (most recent call last):
+  File "/home/rafay/Desktop/decafCompiler/answer/llvm-run", line 172, in <module>
+    result &= run("running", "%s.llvm.exec" % (out_prefix), ".run", None, out_prefix)
+  File "/home/rafay/Desktop/decafCompiler/answer/llvm-run", line 90, in run
+    retval = subprocess.call(shlex.split(cmd), stdin=infile, stdout=outoutfile, stderr=outerrfile)
+  File "/usr/lib/python2.7/subprocess.py", line 523, in call
+    return Popen(*popenargs, **kwargs).wait()
+  File "/usr/lib/python2.7/subprocess.py", line 711, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1340, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory

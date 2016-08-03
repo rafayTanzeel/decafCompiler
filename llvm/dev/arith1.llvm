@@ -16,11 +16,11 @@ entry:
   br i1 %a1, label %end, label %ifright
 
 end:                                              ; preds = %end3, %entry
-  %phival7 = phi i1 [ %a1, %entry ], [ %phival, %end3 ]
-  store i1 %phival7, i1* %flag
+  %phival6 = phi i1 [ %a1, %entry ], [ %phival, %end3 ]
+  store i1 %phival6, i1* %flag
   store i32 0, i32* %size
-  %size8 = load i32, i32* %size
-  call void @print_int(i32 %size8)
+  %size7 = load i32, i32* %size
+  call void @print_int(i32 %size7)
   ret i32 0
 
 ifright:                                          ; preds = %entry
@@ -33,7 +33,6 @@ end3:                                             ; preds = %ifright4, %ifright
 
 ifright4:                                         ; preds = %ifright
   %c5 = load i1, i1* %c
-  %c6 = load i1, i1* %c
-  %nottmp = xor i1 %c6, true
+  %nottmp = xor i1 %c5, true
   br label %end3
 }

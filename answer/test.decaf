@@ -1,27 +1,26 @@
+// print_int is part of the standard input-output library
 extern func print_int(int) void;
 
-package foo {
-	func main() int {
-		var i int;
-		i = 0;
-		while(i<10){
-			i=i+1;
-			print_int(i);
-			//if(i==8){
-			//	break;
-			//}
-			//i=i+1;
-			//print_int(i);
+package GreatestCommonDivisor {
+    var a int = 10;
+    var b int = 20;
 
-		}
+    func main() int {
+        var z int;
+        print_int(gcd(a, b));
+    }
 
-		
-	}
+    func iszero(a int, b int) bool {
+        if (b == 0) {
+            return(a);
+        } else {
+            return(gcd(b, a % b));
+        }
+    }
+
+    // function that computes the greatest common divisor
+    func gcd(a int, b int) int {
+        return(iszero(a, b));
+    }
 }
-
-
-
-
-
-
 

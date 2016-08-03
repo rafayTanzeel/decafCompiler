@@ -8,19 +8,19 @@ entry:
   store i1 %a, i1* %a1
   %a2 = load i1, i1* %a1
   br i1 %a2, label %end, label %ifright
-
-end:                                              ; preds = %ifright, %entry
-  %phival = phi i1 [ %a2, %entry ], [ false, %ifright ]
-  %zexttmp = zext i1 %phival to i32
-  call void @print_int(i32 %zexttmp)
-  ret void
-
-ifright:                                          ; preds = %entry
-  br label %end
 }
 
 define i32 @main() {
 entry:
   call void @test(i1 true)
   ret i32 0
+
+end:                                              ; preds = %ifright, %entry
+  %phival = phi i1 [ %a2, %entry ], [ false, %ifright ]
+  %zexttmp = zext i1 %phival to i32
+  call void @print_int(i32 %zexttmp)
+  ret i32 0
+
+ifright:                                          ; preds = %entry
+  br label %end
 }

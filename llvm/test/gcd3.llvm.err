@@ -7,6 +7,15 @@ declare void @print_int(i32)
 
 declare i32 @read_int()
 
+define i32 @main() {
+entry:
+  %calltmp = call i32 @read_int()
+  %calltmp1 = call i32 @read_int()
+  %calltmp2 = call i32 @gcd(i32 %calltmp, i32 %calltmp1)
+  call void @print_int(i32 %calltmp2)
+  ret i32 0
+}
+
 define i32 @gcd(i32 %a, i32 %b) {
 entry:
   %a1 = alloca i32
@@ -30,19 +39,10 @@ end:                                              ; preds = %iffalse, %iftrue
 
 iffalse:                                          ; preds = %ifstart
   %b5 = load i32, i32* %b2
-  %a6 = load i32, i32* %a1
-  %b7 = load i32, i32* %b2
-  %sremtmp = srem i32 %a6, %b7
+  %b6 = load i32, i32* %b2
+  %a7 = load i32, i32* %a1
+  %sremtmp = srem i32 %a7, %b6
   %calltmp = call i32 @gcd(i32 %b5, i32 %sremtmp)
   ret i32 %calltmp
   br label %end
-}
-
-define i32 @main() {
-entry:
-  %calltmp = call i32 @read_int()
-  %calltmp1 = call i32 @read_int()
-  %calltmp2 = call i32 @gcd(i32 %calltmp, i32 %calltmp1)
-  call void @print_int(i32 %calltmp2)
-  ret i32 0
 }

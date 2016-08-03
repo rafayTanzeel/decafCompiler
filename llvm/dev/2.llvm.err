@@ -1,2 +1,1 @@
-terminate called after throwing an instance of 'std::runtime_error'
-  what():  main method not found
+6: syntax error at char 1

@@ -15,9 +15,9 @@ entry:
   store i32 %x, i32* %x1
   %y = alloca i32
   store i32 10, i32* %y
-  %x2 = load i32, i32* %x1
-  %y3 = load i32, i32* %y
-  %addtmp = add i32 %x2, %y3
+  %y2 = load i32, i32* %y
+  %x3 = load i32, i32* %x1
+  %addtmp = add i32 %x3, %y2
   ret i32 %addtmp
 }
 

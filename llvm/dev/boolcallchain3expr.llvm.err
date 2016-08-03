@@ -20,8 +20,7 @@ entry:
   %zexttmp = zext i1 %a2 to i32
   call void @print_int(i32 %zexttmp)
   %a3 = load i1, i1* %a1
-  %a4 = load i1, i1* %a1
-  %nottmp = xor i1 %a4, true
+  %nottmp = xor i1 %a3, true
   call void @test3(i1 %nottmp)
   ret void
 }
@@ -34,8 +33,7 @@ entry:
   %zexttmp = zext i1 %a2 to i32
   call void @print_int(i32 %zexttmp)
   %a3 = load i1, i1* %a1
-  %a4 = load i1, i1* %a1
-  %nottmp = xor i1 %a4, true
+  %nottmp = xor i1 %a3, true
   call void @test2(i1 %nottmp)
   ret void
 }

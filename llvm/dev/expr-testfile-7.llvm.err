@@ -13,11 +13,10 @@ entry:
   %addtmp = add i32 %multmp, 80
   store i32 %addtmp, i32* %y1
   %y3 = load i32, i32* %y1
-  %y4 = load i32, i32* %y1
-  %negtmp = sub i32 0, %y4
+  %negtmp = sub i32 0, %y3
   store i32 %negtmp, i32* %x
   store i1 false, i1* %y
-  %x5 = load i32, i32* %x
-  call void @print_int(i32 %x5)
+  %x4 = load i32, i32* %x
+  call void @print_int(i32 %x4)
   ret i32 0
 }

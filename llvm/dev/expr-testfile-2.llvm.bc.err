@@ -1,8 +1,8 @@
 /usr/lib/llvm-3.8/bin/llvm-as: assembly parsed, but does not verify as correct!
 PHI node entries do not match predecessors!
-  %phival7 = phi i1 [ %phival, %entry ], [ %z6, %ifright5 ]
+  %phival6 = phi i1 [ %phival, %entry ], [ %z5, %ifright4 ]
 label %entry
 label %end
 Instruction does not dominate all uses!
-  %phival = phi i1 [ true, %entry ], [ %y3, %ifright ]
-  %phival7 = phi i1 [ %phival, %entry ], [ %z6, %ifright5 ]
+  %phival = phi i1 [ true, %entry ], [ %y2, %ifright ]
+  %phival6 = phi i1 [ %phival, %entry ], [ %z5, %ifright4 ]
