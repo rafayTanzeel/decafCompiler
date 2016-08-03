@@ -2,6 +2,19 @@
 
 declare void @print_int(i32)
 
+define i32 @main() {
+entry:
+  %x = alloca i32
+  store i32 1, i32* %x
+  %x1 = load i32, i32* %x
+  call void @print_int(i32 %x1)
+  %x2 = load i32, i32* %x
+  %x3 = load i32, i32* %x
+  %addtmp = add i32 %x3, 1
+  call void @test(i32 %x2, i32 %addtmp)
+  ret i32 0
+}
+
 define void @test(i32 %a, i32 %b) {
 entry:
   %a1 = alloca i32
@@ -17,17 +30,4 @@ entry:
   %x5 = load i32, i32* %x
   call void @print_int(i32 %x5)
   ret void
-}
-
-define i32 @main() {
-entry:
-  %x = alloca i32
-  store i32 1, i32* %x
-  %x1 = load i32, i32* %x
-  call void @print_int(i32 %x1)
-  %x2 = load i32, i32* %x
-  %x3 = load i32, i32* %x
-  %addtmp = add i32 %x3, 1
-  call void @test(i32 %x2, i32 %addtmp)
-  ret i32 0
 }

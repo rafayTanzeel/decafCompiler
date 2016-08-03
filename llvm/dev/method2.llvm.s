@@ -1,5 +1,27 @@
 	.text
 	.file	"llvm/dev/method2.llvm.bc"
+	.globl	main
+	.align	16, 0x90
+	.type	main,@function
+main:                                   # @main
+	.cfi_startproc
+# BB#0:                                 # %entry
+	pushq	%rax
+.Ltmp0:
+	.cfi_def_cfa_offset 16
+	movl	$1, 4(%rsp)
+	movl	$1, %edi
+	callq	print_int
+	movl	4(%rsp), %edi
+	leal	1(%rdi), %esi
+	callq	test
+	xorl	%eax, %eax
+	popq	%rcx
+	retq
+.Lfunc_end0:
+	.size	main, .Lfunc_end0-main
+	.cfi_endproc
+
 	.globl	test
 	.align	16, 0x90
 	.type	test,@function
@@ -7,7 +29,7 @@ test:                                   # @test
 	.cfi_startproc
 # BB#0:                                 # %entry
 	subq	$24, %rsp
-.Ltmp0:
+.Ltmp1:
 	.cfi_def_cfa_offset 32
 	movl	%edi, 20(%rsp)
 	movl	%esi, 16(%rsp)
@@ -20,30 +42,8 @@ test:                                   # @test
 	callq	print_int
 	addq	$24, %rsp
 	retq
-.Lfunc_end0:
-	.size	test, .Lfunc_end0-test
-	.cfi_endproc
-
-	.globl	main
-	.align	16, 0x90
-	.type	main,@function
-main:                                   # @main
-	.cfi_startproc
-# BB#0:                                 # %entry
-	pushq	%rax
-.Ltmp1:
-	.cfi_def_cfa_offset 16
-	movl	$1, 4(%rsp)
-	movl	$1, %edi
-	callq	print_int
-	movl	4(%rsp), %edi
-	leal	1(%rdi), %esi
-	callq	test
-	xorl	%eax, %eax
-	popq	%rcx
-	retq
 .Lfunc_end1:
-	.size	main, .Lfunc_end1-main
+	.size	test, .Lfunc_end1-test
 	.cfi_endproc
 
 

@@ -53,9 +53,9 @@ end:                                              ; preds = %iffalse, %iftrue
 
 iffalse:                                          ; preds = %ifstart
   %b5 = load i32, i32* %b2
-  %b6 = load i32, i32* %b2
-  %a7 = load i32, i32* %a1
-  %sremtmp = srem i32 %a7, %b6
+  %a6 = load i32, i32* %a1
+  %b7 = load i32, i32* %b2
+  %sremtmp = srem i32 %a6, %b7
   %calltmp = call i32 @gcd(i32 %b5, i32 %sremtmp)
   ret i32 %calltmp
   br label %end

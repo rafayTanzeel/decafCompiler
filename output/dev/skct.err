@@ -13,12 +13,6 @@ declare void @print_int(i32)
 
 declare void @print_string(i8*)
 
-define i1 @foo() {
-entry:
-  call void @print_string(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @globalstring, i32 0, i32 0))
-  ret i1 false
-}
-
 define i32 @main() {
 entry:
   %flag = alloca i1
@@ -42,6 +36,12 @@ end1:                                             ; preds = %ifright2, %ifright
 
 ifright2:                                         ; preds = %ifright
   br label %end1
+}
+
+define i1 @foo() {
+entry:
+  call void @print_string(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @globalstring, i32 0, i32 0))
+  ret i1 false
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/skct.llvm" -o "llvm/dev/skct.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/skct.llvm.bc" -o "llvm/dev/skct.llvm.s" ... ok

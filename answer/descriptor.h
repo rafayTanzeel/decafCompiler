@@ -23,8 +23,6 @@ public:
 	else if(t=="StringType") type = "string";
 	else if(t=="BoolType") type = "bool";
 	else type = "void";
-	//cout<<endl<<"TYPE : "<<type<<endl;
-	//cerr << "defined variable: "<< id <<", with type: "<< type <<", on line number: "<< lineno<<endl;
  }
 
 descriptor(int num, string id, string t, llvm::Value* address) { 
@@ -34,8 +32,6 @@ descriptor(int num, string id, string t, llvm::Value* address) {
 	else if(t=="StringType") type = "string";
 	else if(t=="BoolType") type = "bool";
 	else type = "void";
-	//cout<<endl<<"TYPE : "<<type<<endl;
-	//cerr << "defined variable: "<< id <<", with type: "<< type <<", on line number: "<< lineno<<endl;
  }
   descriptor(int num, llvm::Value* address){lineno=num; addr=address;}
   descriptor(int num, string typeVal, llvm::Value* address){lineno=num; addr=address; type=typeVal;}

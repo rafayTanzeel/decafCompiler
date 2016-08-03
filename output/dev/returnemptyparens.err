@@ -9,16 +9,16 @@ generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
 
 declare void @print_int(i32)
 
-define void @f() {
-entry:
-  call void @print_int(i32 1)
-  ret void
-}
-
 define i32 @main() {
 entry:
   call void @f()
   ret i32 0
+}
+
+define void @f() {
+entry:
+  call void @print_int(i32 1)
+  ret void
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/returnemptyparens.llvm" -o "llvm/dev/returnemptyparens.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/returnemptyparens.llvm.bc" -o "llvm/dev/returnemptyparens.llvm.s" ... ok

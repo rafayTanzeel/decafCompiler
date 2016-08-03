@@ -9,13 +9,21 @@ generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
 
 declare void @print_int(i32)
 
-define void @test3(i1 %a) {
+define i32 @main() {
+entry:
+  call void @test1(i1 true)
+  ret i32 0
+}
+
+define void @test1(i1 %a) {
 entry:
   %a1 = alloca i1
   store i1 %a, i1* %a1
   %a2 = load i1, i1* %a1
   %zexttmp = zext i1 %a2 to i32
   call void @print_int(i32 %zexttmp)
+  %a3 = load i1, i1* %a1
+  call void @test2(i1 %a3)
   ret void
 }
 
@@ -31,22 +39,14 @@ entry:
   ret void
 }
 
-define void @test1(i1 %a) {
+define void @test3(i1 %a) {
 entry:
   %a1 = alloca i1
   store i1 %a, i1* %a1
   %a2 = load i1, i1* %a1
   %zexttmp = zext i1 %a2 to i32
   call void @print_int(i32 %zexttmp)
-  %a3 = load i1, i1* %a1
-  call void @test2(i1 %a3)
   ret void
-}
-
-define i32 @main() {
-entry:
-  call void @test1(i1 true)
-  ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/boolcallchain3.llvm" -o "llvm/dev/boolcallchain3.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/boolcallchain3.llvm.bc" -o "llvm/dev/boolcallchain3.llvm.s" ... ok

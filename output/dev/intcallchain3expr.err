@@ -9,12 +9,21 @@ generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
 
 declare void @print_int(i32)
 
-define void @test3(i32 %a) {
+define i32 @main() {
+entry:
+  call void @test1(i32 1)
+  ret i32 0
+}
+
+define void @test1(i32 %a) {
 entry:
   %a1 = alloca i32
   store i32 %a, i32* %a1
   %a2 = load i32, i32* %a1
   call void @print_int(i32 %a2)
+  %a3 = load i32, i32* %a1
+  %addtmp = add i32 %a3, 1
+  call void @test2(i32 %addtmp)
   ret void
 }
 
@@ -30,22 +39,13 @@ entry:
   ret void
 }
 
-define void @test1(i32 %a) {
+define void @test3(i32 %a) {
 entry:
   %a1 = alloca i32
   store i32 %a, i32* %a1
   %a2 = load i32, i32* %a1
   call void @print_int(i32 %a2)
-  %a3 = load i32, i32* %a1
-  %addtmp = add i32 %a3, 1
-  call void @test2(i32 %addtmp)
   ret void
-}
-
-define i32 @main() {
-entry:
-  call void @test1(i32 1)
-  ret i32 0
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/intcallchain3expr.llvm" -o "llvm/dev/intcallchain3expr.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/intcallchain3expr.llvm.bc" -o "llvm/dev/intcallchain3expr.llvm.s" ... ok

@@ -2,14 +2,6 @@
 
 declare void @print_int(i32)
 
-define void @test(i1 %a) {
-entry:
-  %a1 = alloca i1
-  store i1 %a, i1* %a1
-  call void @print_int(i32 1)
-  ret void
-}
-
 define i32 @main() {
 entry:
   br i1 true, label %ifright, label %end
@@ -21,4 +13,12 @@ end:                                              ; preds = %ifright, %entry
 
 ifright:                                          ; preds = %entry
   br label %end
+}
+
+define void @test(i1 %a) {
+entry:
+  %a1 = alloca i1
+  store i1 %a, i1* %a1
+  call void @print_int(i32 1)
+  ret void
 }

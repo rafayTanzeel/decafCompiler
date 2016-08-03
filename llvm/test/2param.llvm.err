@@ -2,6 +2,12 @@
 
 declare void @print_int(i32)
 
+define i32 @main() {
+entry:
+  %calltmp = call i32 @foo(i32 1, i32 2)
+  ret i32 0
+}
+
 define i32 @foo(i32 %x, i32 %y) {
 entry:
   %x1 = alloca i32
@@ -14,11 +20,5 @@ entry:
   call void @print_int(i32 %x3)
   %y4 = load i32, i32* %y2
   call void @print_int(i32 %y4)
-  ret i32 0
-}
-
-define i32 @main() {
-entry:
-  %calltmp = call i32 @foo(i32 1, i32 2)
   ret i32 0
 }

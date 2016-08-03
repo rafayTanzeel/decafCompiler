@@ -22,7 +22,7 @@ public:
   virtual llvm::Value *Codegen() = 0;
 };
 
-
+decafAST* TheMainFunction = NULL;
 bool mainValidity=true;
 
 string getString(decafAST *d) {
@@ -87,8 +87,6 @@ public:
 	}
 };
 
-decafStmtList *MBlock = new decafStmtList();
-
 class PackageAST : public decafAST {
 	string Name;
 	decafStmtList *FieldDeclList;
@@ -112,7 +110,6 @@ public:
 		}
 		if (NULL != MethodDeclList) {
 			val = MethodDeclList->Codegen();
-			MBlock->Codegen();
 		}
 		symtbl->pop_back();
 		// Q: should we enter the class name into the symbol table?
@@ -150,29 +147,31 @@ public:
 	}
 	llvm::Value *Codegen() {
 			descriptor* funcLookup=access_symtbl(name);
+			llvm::Function* TheMethFunction;
 			if(funcLookup!=NULL){ 
-				TheFunction=(llvm::Function*)funcLookup->getAddress();
-				verifyFunction(*TheFunction);
-				return TheFunction;
+				llvm::Function* TheMethFunction=(llvm::Function*)funcLookup->getAddress();
+				verifyFunction(*TheMethFunction);
+				TheFunction=TheMethFunction;
+				return TheMethFunction;
 
 			} else{
 				if(name=="print_string"){
-					if(str()!="ExternFunction(print_string,VoidType,VarDef(StringType))") throw runtime_error("print_string not properly declared");
-					TheFunction=genPrintStringDef(); symtbl->back()[name] = new descriptor(lineno, TheFunction); 
-					verifyFunction(*TheFunction);
-					return TheFunction;
+					TheMethFunction=genPrintStringDef(); symtbl->back()[name] = new descriptor(lineno, TheMethFunction); 
+					verifyFunction(*TheMethFunction);
+					TheFunction=TheMethFunction;
+					return TheMethFunction;
 				}
 				if(name=="print_int"){
-					if(str()!="ExternFunction(print_int,VoidType,VarDef(IntType))") throw runtime_error("print_int not properly declared");
-					TheFunction=genPrintIntDef(); symtbl->back()[name] = new descriptor(lineno, TheFunction);
-					verifyFunction(*TheFunction);
-					return TheFunction;
+					TheMethFunction=genPrintIntDef(); symtbl->back()[name] = new descriptor(lineno, TheMethFunction);
+					verifyFunction(*TheMethFunction);
+					TheFunction=TheMethFunction;
+					return TheMethFunction;
 				}
 				if(name=="read_int"){
-					if(str()!="ExternFunction(read_int,IntType,None)") throw runtime_error("read_int not properly declared");
-					TheFunction=genReadIntDef(); symtbl->back()[name] = new descriptor(lineno, TheFunction);
-					verifyFunction(*TheFunction);
-					return TheFunction;
+					TheMethFunction=genReadIntDef(); symtbl->back()[name] = new descriptor(lineno, TheMethFunction);
+					verifyFunction(*TheMethFunction);
+					TheFunction=TheMethFunction;
+					return TheMethFunction;
 				}
 			}
 
@@ -185,13 +184,14 @@ public:
 			}
 			returnTy=gen_type(returnType);
 			llvm::FunctionType *FT = llvm::FunctionType::get(returnTy, args, false);
-  			TheFunction = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name, TheModule);
+  			TheMethFunction = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name, TheModule);
 
-  			if (TheFunction == 0) {
+  			if (TheMethFunction == 0) {
     				throw runtime_error("empty function block");
   			}
-			verifyFunction(*TheFunction);
-			return TheFunction;
+			verifyFunction(*TheMethFunction);
+			TheFunction=TheMethFunction;
+			return TheMethFunction;
 	}
 };
 
@@ -283,7 +283,7 @@ class MethodDeclAST : public decafAST {
 	decafStmtList * paramList;
 	decafStmtList * methodBlock;
 public:
-	MethodDeclAST(string name, string returnType, decafStmtList* paramList): name(name), returnType(returnType), paramList(paramList){}
+	MethodDeclAST(string name, string returnType, decafStmtList* paramList, decafStmtList * methodBlock): name(name), returnType(returnType), paramList(paramList), methodBlock(methodBlock){}
 
 	~MethodDeclAST() {
 		if (methodBlock != NULL) delete methodBlock;
@@ -298,8 +298,6 @@ public:
 				llvm::Type *returnTy;
 				std::vector<llvm::Type *> args;
 				std::list<string> argNames;
-
-				
 
 				symtbl->push_back(*(new symbol_table));
 				if(paramList!=NULL){
@@ -316,62 +314,59 @@ public:
 
 				returnTy=gen_type(returnType);
 				llvm::FunctionType *FT = llvm::FunctionType::get(returnTy, args, false);
-				TheFunction = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name, TheModule);
-				if (TheFunction == 0) {
+				llvm::Function* TheMethFunction = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name, TheModule);
+				if (TheMethFunction == 0) {
 					throw runtime_error("empty function block");
 				}
-				llvm::BasicBlock *BB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entry", TheFunction);
+				llvm::BasicBlock *BB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entry", TheMethFunction);
 				Builder.SetInsertPoint(BB);
-				symtblMethod->back()[name] = new descriptor(lineno, BB);
+
 				
 
 				
-				for (auto &Arg : TheFunction->args()){
+				for (auto &Arg : TheMethFunction->args()){
 					Arg.setName(argNames.front());
 					llvm::AllocaInst *Alloca = Builder.CreateAlloca(Arg.getType(), nullptr, Arg.getName());
 					Builder.CreateStore(&Arg, Alloca);
 					symtbl->back()[argNames.front()]->setAddress(Alloca);
-					(MethArg[name])[argNames.front()]=Alloca;
 					argNames.pop_front();
 
 				}
 
-				//symtbl->back()[name] = new descriptor(lineno,name,returnType);
-				//symtbl->back()[name]->setAddress(TheFunction);
+				symtbl->back()[name] = new descriptor(lineno,name,returnType);
+				symtbl->back()[name]->setAddress(TheMethFunction);
+
+				symtbl->push_back(*(new symbol_table));
 
 				
 
-				
-
-				//if(methodBlock!=NULL){
-				//	methodBlock->Codegen();
-				//}else{
-				//	throw runtime_error("empty method block");
-				//}
+				if(methodBlock!=NULL){
+					methodBlock->Codegen();
+				}else{
+					throw runtime_error("empty method block");
+				}
 
 
-				symtbl->pop_back();
+				symtbl->pop_back(); symtbl->pop_back();
 
 				symtbl->back()[name] = new descriptor(lineno,name,returnType);
-				symtbl->back()[name]->setAddress(TheFunction);
+				symtbl->back()[name]->setAddress(TheMethFunction);
 
-				
+				verifyFunction(*TheMethFunction);
+				TheFunction=TheMethFunction;
 
-				verifyFunction(*TheFunction);
-				return TheFunction;
+				return TheMethFunction;
 		}
 
 };
 
-
-
+map<string, MethodDeclAST*> methDeclare;
 
 class MethodBlockAST : public decafAST {
-	string name;
 	decafStmtList * var_decl_list;
 	decafStmtList * statement_list;
 public:
-	MethodBlockAST(decafStmtList * var_decl_list, decafStmtList * statement_list) : name(name), var_decl_list(var_decl_list), statement_list(statement_list) {}
+	MethodBlockAST(decafStmtList * var_decl_list, decafStmtList * statement_list) :var_decl_list(var_decl_list), statement_list(statement_list) {}
 
 	~MethodBlockAST() {
 		if (var_decl_list != NULL) delete var_decl_list;
@@ -381,37 +376,20 @@ public:
 	string str() {
 		return string("MethodBlock") + "(" + getString(var_decl_list) + ',' + getString(statement_list) + ")";
 	}
-	
-	void setName(string arg){name=arg;}
-
 	llvm::Value *Codegen() {
-			llvm::BasicBlock *BB = (llvm::BasicBlock*)(symtblMethod->back()[name]->getAddress());
-			Builder.SetInsertPoint(BB);
-
-
-			symtbl->push_back(*(new symbol_table));
-
-			
-			for(auto imap: MethArg[name]){
-				symtbl->back()[imap.first]=new descriptor(lineno, imap.second);
-
-			}
-			//MethArg[name].clear();
-
                         llvm::Value *val = NULL;
+			llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
 			if (NULL != var_decl_list) {
 				val = var_decl_list->Codegen();
 			}
 			if (NULL != statement_list) {
 				val = statement_list->Codegen();
 			}
-			llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
 			llvm::Function *func = Builder.GetInsertBlock()->getParent();
 			if(symtbl->back()["return"]==NULL){
 			if(func->getReturnType()==Builder.getInt32Ty()) {Builder.CreateRet(Builder.getInt32(0));}
 			else if(func->getReturnType()==Builder.getInt1Ty()) {Builder.CreateRet(Builder.getInt1(1));}
 			else Builder.CreateRet(NULL);}
-			symtbl->pop_back(); 
 			return val;
 		}
 };
@@ -431,10 +409,23 @@ public:
 	}
 	llvm::Value *Codegen() { 
 
+			
+			llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
+
+
 			descriptor* func=access_symtbl(name);
 
-			if(func==NULL) throw runtime_error("function not found");
+			if(func==NULL){
+				if(methDeclare[name]!=NULL){
+					methDeclare[name]->Codegen(); func=access_symtbl(name);
+				}
+			}
+			
+			
+			
+			Builder.SetInsertPoint(CurBB);
 
+			if(func==NULL) throw runtime_error("function not found"); 
 			llvm::Function *call=(llvm::Function *)func->getAddress();
 
 			llvm::Value *val;
@@ -479,10 +470,12 @@ private:
 	ExpressionAST* right_value;
 	string expressionType;
 	int result=0;
+	llvm::Type* type;
+	llvm::Value* valueStorage;
 	string id;
 	MethodCall* methodReturn;
 
-	map<string, int> converter = { { "Plus", 1 },{ "Minus", 2 },{ "Mult", 3 },{ "Div", 4 },{ "Leftshift", 5 },{ "Rightshift", 6 },{ "Mod", 7 },{ "Eq", 8 },{ "Neq", 9 },{ "Lt", 10 },{ "Leq", 11 },{ "Gt", 12 },{ "Geq", 13 },{ "And", 14 },{ "Or", 15 }, { "UnaryMinus", 16 },{ "Not", 17 },{ "BoolExpr", 18 },{ "NumberExpr", 19 }};
+	map<string, int> converter = { { "Plus", 1 },{ "Minus", 2 },{ "Mult", 3 },{ "Div", 4 },{ "Leftshift", 5 },{ "Rightshift", 6 },{ "Mod", 7 },{ "Eq", 8 },{ "Neq", 9 },{ "Lt", 10 },{ "Leq", 11 },{ "Gt", 12 },{ "Geq", 13 },{ "And", 14 },{ "Or", 15 }, { "UnaryMinus", 16 },{ "Not", 17 }};
 public:
 
 	ExpressionAST(string expr):expressionType(expr) {}
@@ -493,9 +486,9 @@ public:
 
 	//Constants 
 	ExpressionAST(string opVal, int resultVal) :op(opVal), result(resultVal){
-		if(opVal=="BoolExpr" && resultVal==1) {expressionType = op + "(True)"; }
-		else if(opVal=="BoolExpr" && resultVal==0) {expressionType = op + "(False)"; }
-		else {expressionType = op + "(" + to_string(result) + ")";}
+		if(opVal=="BoolExpr" && resultVal==1) {expressionType = op + "(True)"; type=Builder.getInt1Ty(); valueStorage=Builder.getInt1(result);}
+		else if(opVal=="BoolExpr" && resultVal==0) {expressionType = op + "(False)"; type=Builder.getInt1Ty(); valueStorage=Builder.getInt1(result);}
+		else {expressionType = op + "(" + to_string(result) + ")"; type=Builder.getInt32Ty(); valueStorage=Builder.getInt32(result);}
 	}
 
 	//rvalue 
@@ -510,13 +503,14 @@ public:
 
 	//Binary Arith 
 	ExpressionAST(string op, ExpressionAST* left_value, ExpressionAST* right_value) : op(op), left_value(left_value), right_value(right_value) {
-		expressionType = "BinaryExpr(" + op + ',' + left_value->expressionType + ',' + right_value->expressionType + ")";
-		
-		
+		expressionType = "BinaryExpr(" + op + ',' + left_value->expressionType + ',' + right_value->expressionType + ")";	
 	}
 
 	//UnaryMinus && Not
-	ExpressionAST(string op, ExpressionAST* value) : op(op), right_value(value){
+	ExpressionAST(string op, ExpressionAST* value) : op(op), right_value(value), left_value(value){
+		expressionType = "UnaryExpr(" + op + ',' + value->expressionType + ")";
+		if (op == "UnaryMinus") {result=-1*value->result; valueStorage=Builder.getInt32(result); }
+		else {result = !value->result; valueStorage=Builder.getInt1(result);}
 	}
 
 	int getResult() { return result; }
@@ -533,13 +527,12 @@ public:
 				if(gl==NULL){
 					throw runtime_error("unable to get address"); 
 				}
-				return Builder.CreateLoad(gl, id);;
+				valueStorage = Builder.CreateLoad(gl, id);
+				return valueStorage;
 		}
-
 		if (op=="MethodCall") return methodReturn->Codegen();
-		if(converter[op]==18) return Builder.getInt1(result);
-		if(converter[op]==19) return Builder.getInt32(result);
-	
+		if(left_value == NULL || right_value == NULL) return valueStorage;
+
 		if(converter[op]==14 || converter[op]==15){
 
 				
@@ -547,8 +540,10 @@ public:
 				
 				llvm::Value *L = left_value->Codegen();
 
-				llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
-				llvm::BasicBlock *IfRightBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifright", TheFunction);
+				llvm::Function *func = Builder.GetInsertBlock()->getParent();
+
+				llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", func);
+				llvm::BasicBlock *IfRightBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifright", func);
 
 
 				if(converter[op]==15){//or
@@ -574,13 +569,8 @@ public:
 		}
 
 		
-
-		llvm::Value *R = right_value->Codegen();
-
-		if(converter[op]==16) return Builder.CreateNeg(R, "negtmp");
-		if(converter[op]==17) return Builder.CreateNot(R, "nottmp");
-
 		llvm::Value *L = left_value->Codegen();
+		llvm::Value *R = right_value->Codegen();
 
 
         	switch (converter[op]) {
@@ -597,7 +587,9 @@ public:
 			 case 11: return Builder.CreateICmpSLE(L, R, "ICmpSLEtmp"); break;
 			 case 12: return Builder.CreateICmpSGT(L, R, "ICmpSGTtmp"); break;
 			 case 13: return Builder.CreateICmpSGE(L, R, "ICmpSGEtmp"); break;
-			 default: throw runtime_error("expression is wrong"); break;
+			 case 16: return Builder.CreateNeg(R, "negtmp"); break;
+			 case 17: return Builder.CreateNot(R, "nottmp"); break;
+			default: throw runtime_error("expression is wrong"); break;
         	 }
 	}
 
@@ -691,7 +683,7 @@ public:
 
 	llvm::Value *Codegen() {
 		descriptor* desc=access_symtbl(name);
-		
+
 		if(desc==NULL){
 			throw runtime_error("identifier not defined"); 
 		}
@@ -760,9 +752,11 @@ public:
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
 
-				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
-				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", TheFunction);
-				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
+				llvm::Function *func = Builder.GetInsertBlock()->getParent();
+
+				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", func);
+				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", func);
+				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", func);
 
 				symtbl->back()["breakS"]=new descriptor(lineno, IfStartBB);
 				symtbl->back()["breakE"]=new descriptor(lineno, EndBB);
@@ -806,11 +800,11 @@ public:
 				
 				pre_assign_list->Codegen(); //Execute initialization
 
-
-				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
-				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", TheFunction);
-				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
-				llvm::BasicBlock *IfIncrementBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
+				llvm::Function *func = Builder.GetInsertBlock()->getParent();
+				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", func);
+				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", func);
+				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", func);
+				llvm::BasicBlock *IfIncrementBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", func);
 
 				symtbl->back()["breakS"]=new descriptor(lineno, IfIncrementBB);
 				symtbl->back()["breakE"]=new descriptor(lineno, EndBB);
@@ -855,10 +849,15 @@ public:
 	llvm::Value *Codegen() { 
 				llvm::Value *val = NULL;
 
+				llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
+
+
+				llvm::Function *func = Builder.GetInsertBlock()->getParent();
+
 				llvm::BasicBlock *entryBB = Builder.GetInsertBlock();
-				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", TheFunction);
-				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", TheFunction);
-				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", TheFunction);
+				llvm::BasicBlock *IfStartBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifstart", func);
+				llvm::BasicBlock *IfTrueBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iftrue", func);
+				llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "end", func);
 
 
 
@@ -877,7 +876,7 @@ public:
 						Builder.CreateBr(EndBB);
 						IfTrueBB=Builder.GetInsertBlock();
 
-						llvm::BasicBlock *IfFalseBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iffalse", TheFunction);
+						llvm::BasicBlock *IfFalseBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "iffalse", func);
 
 						Builder.SetInsertPoint(IfFalseBB);
 						else_block->Codegen();
@@ -917,7 +916,16 @@ public:
 		llvm::BasicBlock *CurBB = Builder.GetInsertBlock();
 		llvm::Function *func = Builder.GetInsertBlock()->getParent();
 		if(expr->str()!="None"){
-			return Builder.CreateRet(expr->Codegen());
+			llvm::Value* val=expr->Codegen();
+			if(val->getType()!=func->getReturnType() && func->getReturnType()==Builder.getInt32Ty())
+				val = Builder.CreateZExt(val, func->getReturnType(), "zexttmp");
+			else if(val->getType()!=func->getReturnType() && func->getReturnType()==Builder.getInt1Ty()){
+				if(val==Builder.getInt32(0))
+					val=Builder.getInt1(0);
+				else
+					val=Builder.getInt1(1);
+			}
+			return Builder.CreateRet(val);
 		}else{
 		
 		if(func->getReturnType()==Builder.getInt32Ty()) {return Builder.CreateRet(Builder.getInt32(0));}

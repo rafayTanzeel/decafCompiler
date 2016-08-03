@@ -15,6 +15,19 @@ entry:
   ret i32 0
 }
 
+define i32 @gcd(i32 %a, i32 %b) {
+entry:
+  %a1 = alloca i32
+  store i32 %a, i32* %a1
+  %b2 = alloca i32
+  store i32 %b, i32* %b2
+  %a3 = load i32, i32* %a1
+  %b4 = load i32, i32* %b2
+  %calltmp = call i1 @iszero(i32 %a3, i32 %b4)
+  %zexttmp = zext i1 %calltmp to i32
+  ret i32 %zexttmp
+}
+
 define i1 @iszero(i32 %a, i32 %b) {
 entry:
   %a1 = alloca i32
@@ -22,18 +35,6 @@ entry:
   %b2 = alloca i32
   store i32 %b, i32* %b2
   br label %ifstart
-}
-
-define i32 @gcd(i32 %a, i32 %b) {
-entry:
-  %a1 = alloca i32
-  store i32 %a, i32* %a1
-  %b2 = alloca i32
-  store i32 %b, i32* %b2
-  %a8 = load i32, i32* %a1
-  %b9 = load i32, i32* %b2
-  %calltmp10 = call i1 @iszero(i32 %a8, i32 %b9)
-  ret i1 %calltmp10
 
 ifstart:                                          ; preds = %entry
   %b3 = load i32, i32* %b2
@@ -42,18 +43,18 @@ ifstart:                                          ; preds = %entry
 
 iftrue:                                           ; preds = %ifstart
   %a4 = load i32, i32* %a1
-  ret i32 %a4
+  ret i1 true
   br label %end
 
 end:                                              ; preds = %iffalse, %iftrue
-  ret i32 0
+  ret i1 true
 
 iffalse:                                          ; preds = %ifstart
   %b5 = load i32, i32* %b2
-  %b6 = load i32, i32* %b2
-  %a7 = load i32, i32* %a1
-  %sremtmp = srem i32 %a7, %b6
+  %a6 = load i32, i32* %a1
+  %b7 = load i32, i32* %b2
+  %sremtmp = srem i32 %a6, %b7
   %calltmp = call i32 @gcd(i32 %b5, i32 %sremtmp)
-  ret i32 %calltmp
+  ret i1 true
   br label %end
 }

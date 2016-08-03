@@ -1,5 +1,24 @@
 	.text
 	.file	"llvm/test/2param.llvm.bc"
+	.globl	main
+	.align	16, 0x90
+	.type	main,@function
+main:                                   # @main
+	.cfi_startproc
+# BB#0:                                 # %entry
+	pushq	%rax
+.Ltmp0:
+	.cfi_def_cfa_offset 16
+	movl	$1, %edi
+	movl	$2, %esi
+	callq	foo
+	xorl	%eax, %eax
+	popq	%rcx
+	retq
+.Lfunc_end0:
+	.size	main, .Lfunc_end0-main
+	.cfi_endproc
+
 	.globl	foo
 	.align	16, 0x90
 	.type	foo,@function
@@ -7,7 +26,7 @@ foo:                                    # @foo
 	.cfi_startproc
 # BB#0:                                 # %entry
 	pushq	%rax
-.Ltmp0:
+.Ltmp1:
 	.cfi_def_cfa_offset 16
 	movl	%edi, 4(%rsp)
 	movl	%esi, (%rsp)
@@ -20,27 +39,8 @@ foo:                                    # @foo
 	xorl	%eax, %eax
 	popq	%rcx
 	retq
-.Lfunc_end0:
-	.size	foo, .Lfunc_end0-foo
-	.cfi_endproc
-
-	.globl	main
-	.align	16, 0x90
-	.type	main,@function
-main:                                   # @main
-	.cfi_startproc
-# BB#0:                                 # %entry
-	pushq	%rax
-.Ltmp1:
-	.cfi_def_cfa_offset 16
-	movl	$1, %edi
-	movl	$2, %esi
-	callq	foo
-	xorl	%eax, %eax
-	popq	%rcx
-	retq
 .Lfunc_end1:
-	.size	main, .Lfunc_end1-main
+	.size	foo, .Lfunc_end1-foo
 	.cfi_endproc
 
 

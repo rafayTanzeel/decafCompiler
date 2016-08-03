@@ -46,8 +46,6 @@ llvm::Function *genReadIntDef() {
 
 
 symbol_table_list* symtbl;
-symbol_table_list* symtblMethod;		
-map<string, map<string, llvm::AllocaInst*>> MethArg;
 
 extern int lineno;
 
@@ -129,7 +127,7 @@ void idExist(string ident){
 %token T_DOT
 %token <idval> T_ID
 
-%type <ast> extern_list extern_def extern_type comma_sep_extern_types extern_types_func decafpackage field_decls field_decl method_arg method_list_arg method_decls method_decl comma_sep_id_type comma_sep_method_arg idtypes_func_args var_decls var_decl block statements statement method_call method_block  assign break_statement continue_statement while_statement Lvalue for_statement init post return_statement if_statement
+%type <ast> extern_list extern_def extern_type comma_sep_extern_types extern_types_func decafpackage field_decls field_decl method_arg method_list_arg method_decls method_decl main_method_decl comma_sep_id_type comma_sep_method_arg idtypes_func_args var_decls var_decl block statements statement method_call method_block  assign break_statement continue_statement while_statement Lvalue for_statement init post return_statement if_statement
 %type <sval> extra_id_comma id_queried  method_type type
 %type <east> expr exprConstant check rtrop rtropin rvalue
 
@@ -151,7 +149,6 @@ start: program
 
 program: extern_list decafpackage
     { 
-	if(mainValidity) throw runtime_error("main method not found");
         ProgramAST *prog = new ProgramAST((decafStmtList *)$1, (PackageAST *)$2); 
 		if (printAST) {
 			cout << getString(prog) << endl;
@@ -183,6 +180,7 @@ extern_def: T_EXTERN T_FUNC T_ID T_LPAREN extern_types_func T_RPAREN method_type
 
 		$$=new ExternFuncAST(*$3,*$7,(decafStmtList*)$5); 
 		
+		//$$->Codegen();
 
 		delete $3; delete $7;
 
@@ -324,39 +322,26 @@ comma_sep_id_type: T_ID type T_COMMA comma_sep_id_type {
 
 
 //Method Declaration
-method_decls: {$$ = NULL;} | method_decl method_decls { 
+method_decls: main_method_decl { if(TheMainFunction==NULL) throw runtime_error("main method not found"); if(mainValidity) ((decafStmtList*)$1)->push_back(TheMainFunction); mainValidity=false; $$=$1;}
 
-
-	decafStmtList *slist = new decafStmtList(); 
-	slist->push_back($1);
-			
-	//if($1!=NULL) slist->push_back($1); 
-
-	if($2!=NULL) slist->push_back($2); 
-
-
-	$$ = slist; 
-
-}
+main_method_decl : {$$ = new decafStmtList();} | method_decl method_decls { decafStmtList *slist = new decafStmtList(); if($1!=NULL) slist->push_back($1); if($2!=NULL) slist->push_back($2); $$ = slist; }
 
 method_decl: T_FUNC T_ID T_LPAREN idtypes_func_args T_RPAREN method_type method_block {
 
 	if(*$2=="main") {
 
-		if(*$6!="IntType"){ throw runtime_error("main type should be int"); }
-		mainValidity=false;
-		
+		if(*$6!="IntType"){ throw runtime_error("main type should be int"); } 
+
+		TheMainFunction=(decafAST*)new MethodDeclAST(*$2, *$6, (decafStmtList*)$4, (decafStmtList*)$7);
+
 	} 
 
+	else {
+		methDeclare[*$2]=new MethodDeclAST(*$2, *$6, (decafStmtList*)$4, (decafStmtList*)$7);
 
-	decafStmtList *slist = new decafStmtList();
-	slist->push_back((decafAST*)new MethodDeclAST(*$2, *$6, (decafStmtList*)$4));
-	MethodBlockAST* buffBlock=((MethodBlockAST*)$7);
-	buffBlock->setName(*$2);
-	MBlock->push_back(buffBlock);
-	$$=slist;
+	} 
 
-	
+	$$=NULL;
 
 }
 
@@ -533,9 +518,9 @@ rvalue: T_ID T_LSB expr T_RSB {$$=new ExpressionAST("ArrayLocExpr",*$1, $3); del
 
 expr: rvalue
       | method_call 					{$$ = new ExpressionAST("MethodCall", (MethodCall*)$1); }
+      | exprConstant					
       | T_NOT expr	%prec UnaryNot			{$$=new ExpressionAST("Not", $2);}
       | T_MINUS expr	%prec UnaryMinus 		{$$=new ExpressionAST("UnaryMinus", $2);}
-      | exprConstant					
       | T_LPAREN expr T_RPAREN				{$$ = $2;}
       | expr T_PLUS expr				{$$=new ExpressionAST("Plus", $1, $3);}
       | expr T_MINUS expr				{$$=new ExpressionAST("Minus", $1, $3);}
@@ -543,7 +528,7 @@ expr: rvalue
       | expr T_DIV expr					{$$=new ExpressionAST("Div", $1, $3);}
       | expr T_LEFTSHIFT expr				{$$=new ExpressionAST("Leftshift", $1, $3);}
       | expr T_RIGHTSHIFT expr				{$$=new ExpressionAST("Rightshift", $1, $3);}
-      | expr T_MOD expr					{if($3->getResult()==0) $3->setResult(1); /*throw runtime_error("can't mod zero")*/; $$=new ExpressionAST("Mod", $1, $3);}
+      | expr T_MOD expr					{$$=new ExpressionAST("Mod", $1, $3);}
       | expr T_EQ expr					{$$=new ExpressionAST("Eq", $1, $3);}
       | expr T_NEQ expr					{$$=new ExpressionAST("Neq", $1, $3);}
       | expr T_LT expr					{$$=new ExpressionAST("Lt", $1, $3);}
@@ -562,14 +547,12 @@ int main() {
   TheModule = new llvm::Module("Test", Context);
   // set up symbol table
   symtbl=new symbol_table_list();
-  symtblMethod=new symbol_table_list();
   symtbl->push_back(*(new symbol_table));
-  symtblMethod->push_back(*(new symbol_table));
+
   //TheFunction = gen_main_def();
   // parse the input and create the abstract syntax tree
   int retval = yyparse();
   // remove symbol table
-  delete symtblMethod;
   delete symtbl;
   // Finish off the main function. (see the WARNING above)
   //TheFunction = gen_main_def();

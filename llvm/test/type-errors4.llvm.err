@@ -1,1 +1,2 @@
-2: syntax error at char 1
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  main method not found

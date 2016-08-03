@@ -1,9 +1,0 @@
-output prefix: llvm/test/incomplete8
-llvmas: /usr/lib/llvm-3.8/bin/llvm-as
-llc: /usr/lib/llvm-3.8/bin/llc
-cc: gcc
-codegen: /home/rafay/Desktop/decafCompiler/answer/decafcomp
-stdlib: /home/rafay/Desktop/decafCompiler/answer/decaf-stdlib.c
-generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... failed (-11)
-3: syntax error at char 1
-codegen failed

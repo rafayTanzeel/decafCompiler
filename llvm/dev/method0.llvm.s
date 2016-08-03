@@ -1,9 +1,9 @@
 	.text
 	.file	"llvm/dev/method0.llvm.bc"
-	.globl	test
+	.globl	main
 	.align	16, 0x90
-	.type	test,@function
-test:                                   # @test
+	.type	main,@function
+main:                                   # @main
 	.cfi_startproc
 # BB#0:                                 # %entry
 	pushq	%rax
@@ -14,31 +14,11 @@ test:                                   # @test
 	callq	print_int
 	movl	4(%rsp), %edi
 	callq	print_int
-	popq	%rax
-	retq
-.Lfunc_end0:
-	.size	test, .Lfunc_end0-test
-	.cfi_endproc
-
-	.globl	main
-	.align	16, 0x90
-	.type	main,@function
-main:                                   # @main
-	.cfi_startproc
-# BB#0:                                 # %entry
-	pushq	%rax
-.Ltmp1:
-	.cfi_def_cfa_offset 16
-	movl	$1, 4(%rsp)
-	movl	$1, %edi
-	callq	print_int
-	movl	4(%rsp), %edi
-	callq	print_int
 	xorl	%eax, %eax
 	popq	%rcx
 	retq
-.Lfunc_end1:
-	.size	main, .Lfunc_end1-main
+.Lfunc_end0:
+	.size	main, .Lfunc_end0-main
 	.cfi_endproc
 
 

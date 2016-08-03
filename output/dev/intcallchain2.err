@@ -9,13 +9,10 @@ generating llvm code:/home/rafay/Desktop/decafCompiler/answer/decafcomp ... ok
 
 declare void @print_int(i32)
 
-define void @test2(i32 %a) {
+define i32 @main() {
 entry:
-  %a1 = alloca i32
-  store i32 %a, i32* %a1
-  %a2 = load i32, i32* %a1
-  call void @print_int(i32 %a2)
-  ret void
+  call void @test1(i32 1)
+  ret i32 0
 }
 
 define void @test1(i32 %a) {
@@ -29,10 +26,13 @@ entry:
   ret void
 }
 
-define i32 @main() {
+define void @test2(i32 %a) {
 entry:
-  call void @test1(i32 1)
-  ret i32 0
+  %a1 = alloca i32
+  store i32 %a, i32* %a1
+  %a2 = load i32, i32* %a1
+  call void @print_int(i32 %a2)
+  ret void
 }
 assembling to bitcode:/usr/lib/llvm-3.8/bin/llvm-as "llvm/dev/intcallchain2.llvm" -o "llvm/dev/intcallchain2.llvm.bc" ... ok
 converting to native code:/usr/lib/llvm-3.8/bin/llc "llvm/dev/intcallchain2.llvm.bc" -o "llvm/dev/intcallchain2.llvm.s" ... ok

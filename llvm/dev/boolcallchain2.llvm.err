@@ -2,14 +2,10 @@
 
 declare void @print_int(i32)
 
-define void @test2(i1 %a) {
+define i32 @main() {
 entry:
-  %a1 = alloca i1
-  store i1 %a, i1* %a1
-  %a2 = load i1, i1* %a1
-  %zexttmp = zext i1 %a2 to i32
-  call void @print_int(i32 %zexttmp)
-  ret void
+  call void @test1(i1 true)
+  ret i32 0
 }
 
 define void @test1(i1 %a) {
@@ -24,8 +20,12 @@ entry:
   ret void
 }
 
-define i32 @main() {
+define void @test2(i1 %a) {
 entry:
-  call void @test1(i1 true)
-  ret i32 0
+  %a1 = alloca i1
+  store i1 %a, i1* %a1
+  %a2 = load i1, i1* %a1
+  %zexttmp = zext i1 %a2 to i32
+  call void @print_int(i32 %zexttmp)
+  ret void
 }
