@@ -1,26 +1,21 @@
-// print_int is part of the standard input-output library
 extern func print_int(int) void;
+extern func read_int() int;
 
 package GreatestCommonDivisor {
     var a int = 10;
     var b int = 20;
 
     func main() int {
-        var z int;
-        print_int(gcd(a, b));
+        print_int(gcd(read_int(), read_int()));
     }
 
-    func iszero(a int, b int) bool {
+    // function that computes the greatest common divisor
+    func gcd(a int, b int) int {
         if (b == 0) {
             return(a);
         } else {
             return(gcd(b, a % b));
         }
-    }
-
-    // function that computes the greatest common divisor
-    func gcd(a int, b int) int {
-        return(iszero(a, b));
     }
 }
 
