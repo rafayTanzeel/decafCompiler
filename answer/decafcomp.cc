@@ -87,6 +87,7 @@ public:
 	}
 };
 
+
 class PackageAST : public decafAST {
 	string Name;
 	decafStmtList *FieldDeclList;
@@ -261,13 +262,13 @@ public:
 	llvm::Value *Codegen() {
 			llvm::AllocaInst *Alloca;
 			if(!varType){
-			symtbl->back()[name] = new descriptor(lineno,name,type);
+				symtbl->back()[name] = new descriptor(lineno,name,type);
 			}
 			else{
-			llvm::Value *temp=(gen_type(type)==Builder.getInt32Ty())?Builder.getInt32(0):Builder.getInt1(0);
-			Alloca = Builder.CreateAlloca(temp->getType(), nullptr, name);
+				llvm::Value *temp=(gen_type(type)==Builder.getInt32Ty())?Builder.getInt32(0):Builder.getInt1(0);
+				Alloca = Builder.CreateAlloca(temp->getType(), nullptr, name);
 
-			symtbl->back()[name]=new descriptor(lineno, Alloca);
+				symtbl->back()[name]=new descriptor(lineno, Alloca);
 			}
 			return Alloca;
 		}
@@ -326,6 +327,7 @@ public:
 				
 				for (auto &Arg : TheMethFunction->args()){
 					Arg.setName(argNames.front());
+					
 					llvm::AllocaInst *Alloca = Builder.CreateAlloca(Arg.getType(), nullptr, Arg.getName());
 					Builder.CreateStore(&Arg, Alloca);
 					symtbl->back()[argNames.front()]->setAddress(Alloca);
@@ -697,7 +699,7 @@ public:
 		llvm::Value *exprValCG = exprVal->Codegen();
 		if(exprValCG==NULL ) throw runtime_error("exprVal not inserted correctly"); 
 	    	llvm::PointerType *ptrTy = exprValCG->getType()->getPointerTo();
-
+		
 
         	if(ptrTy == laddr->getType()){
         		val = Builder.CreateStore(exprValCG, laddr);

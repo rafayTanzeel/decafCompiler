@@ -14,6 +14,7 @@ bool printAST = false;
 
 using namespace std;
 
+map<string, bool> checker;
 
 static llvm::Module *TheModule;
 
@@ -57,11 +58,6 @@ descriptor* access_symtbl(string ident) {
 	return find_ident;
 }
 
-void idExist(string ident){
-	if(symtbl->back().find(ident) != symtbl->back().end()){
-		//cerr<<"Warning: redefining previously defined identifier: "<<ident<<endl;
-	}
-}
 
 #include "decafcomp.cc"
 
@@ -286,32 +282,24 @@ idtypes_func_args: {$$=new decafStmtList();} | comma_sep_id_type
 
 
 comma_sep_id_type: T_ID type T_COMMA comma_sep_id_type {
-
-
-	idExist(*$1); 
-
-	decafStmtList *slist = new decafStmtList();
 	
-	slist->push_back(new TypedSymbol(*$1, *$2, false));
-	string str=((TypedSymbol*)$4)->str();
-	int pos= str.find(',');
-	string varName = str.substr(7, pos-7);
-	string varType = str.substr(pos+1, str.length()-pos-2);
+	decafStmtList *slist =((decafStmtList*)$4);
+	slist->push_front(new TypedSymbol(*$1, *$2, false)); 
 	
-	slist->push_back(new TypedSymbol(varName, varType, false)); 
 
-	$$=slist; delete $1; delete $2;
+	$$=$4;
+	
+	delete $1; delete $2;
 
 }
          | T_ID type {
 
-	idExist(*$1); 
-
 	decafStmtList *slist = new decafStmtList();
+	slist->push_front(new TypedSymbol(*$1, *$2, false));
+	
+	$$=slist; 
 
-	slist->push_back(new TypedSymbol(*$1, *$2, false)); 
-
-	$$=slist; delete $1;  delete $2;
+	delete $1;  delete $2;
 
 }
 
@@ -466,8 +454,8 @@ Lvalue: T_ID {
 
 }
 
-comma_sep_method_arg: method_arg T_COMMA comma_sep_method_arg {decafStmtList *slist = new decafStmtList(); slist->push_back($1); slist->push_back($3); $$=slist;}
-		    | method_arg //{decafStmtList *slist = new decafStmtList(); slist->push_back($1); $$=slist;}
+comma_sep_method_arg: method_arg T_COMMA comma_sep_method_arg {((decafStmtList*)$3)->push_front($1); $$=$3;}
+		    | method_arg {decafStmtList *slist = new decafStmtList(); slist->push_front($1); $$=slist;}
 
 
 
@@ -483,23 +471,12 @@ method_call: T_ID T_LPAREN method_list_arg T_RPAREN {
 	
 }
 method_arg: expr {
-		decafStmtList *slist = new decafStmtList(); 
-		
-		slist->push_back(new MethodArg($1->str(), $1));
 
-		$$=slist; 
-;
-
+		$$=new MethodArg($1->str(), $1); 
 }
 	 | T_STRINGCONSTANT {
-
-		decafStmtList *slist = new decafStmtList(); 
-
-
 		
-		slist->push_back(new MethodArg(*$1));
-		
-		$$=slist; 
+		$$=new MethodArg(*$1); 
 
 		delete $1;
 
